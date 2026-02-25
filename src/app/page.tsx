@@ -1,10 +1,21 @@
+"use client";
+
 import { Building2, ListChecks, Bookmark, Zap, TrendingUp, Target } from "lucide-react";
 import { ScoutButton } from "@/components/ui/ScoutButton";
 import { ScoutCard, ScoutCardHeader, ScoutCardTitle, ScoutCardContent } from "@/components/ui/ScoutCard";
 import { ScoutBadge, StageBadge } from "@/components/ui/ScoutBadge";
 import Link from "next/link";
+import { mockCompanies } from "@/lib/mock-companies";
 
 export default function Home() {
+  const totalCompanies = mockCompanies.length;
+  const avgScore = Math.round(
+    mockCompanies.reduce((sum, c) => sum + c.score, 0) / totalCompanies
+  );
+  const topCompany = mockCompanies.reduce((best, c) =>
+    c.score > best.score ? c : best
+  );
+
   return (
     <div className="space-y-8 fade-in">
       {/* Page Header */}
@@ -38,7 +49,7 @@ export default function Home() {
               <ScoutBadge variant="teal" size="sm">Active</ScoutBadge>
             </ScoutCardHeader>
             <ScoutCardContent>
-              <p className="text-3xl font-bold text-[var(--scout-text-heading)]">—</p>
+              <p className="text-3xl font-bold text-[var(--scout-text-heading)]">{totalCompanies}</p>
               <p className="text-sm text-[var(--scout-text-muted)] mt-1">
                 Tracked startups
               </p>
@@ -47,121 +58,52 @@ export default function Home() {
         </ScoutCard>
 
         <ScoutCard interactive>
-          <Link href="/lists" className="block">
+          <Link href="/companies" className="block">
             <ScoutCardHeader>
               <ScoutCardTitle>
                 <span className="flex items-center gap-2">
-                  <ListChecks size={16} className="text-[var(--scout-accent-purple)]" />
-                  Lists
+                  <Target size={16} className="text-[var(--scout-accent-purple)]" />
+                  Avg Score
                 </span>
               </ScoutCardTitle>
-              <ScoutBadge variant="purple" size="sm">Manage</ScoutBadge>
+              <ScoutBadge variant="purple" size="sm">Metric</ScoutBadge>
             </ScoutCardHeader>
             <ScoutCardContent>
-              <p className="text-3xl font-bold text-[var(--scout-text-heading)]">—</p>
+              <p className="text-3xl font-bold text-[var(--scout-text-heading)]">{avgScore}</p>
               <p className="text-sm text-[var(--scout-text-muted)] mt-1">
-                Custom lists
+                Average company score
               </p>
             </ScoutCardContent>
           </Link>
         </ScoutCard>
 
         <ScoutCard interactive>
-          <Link href="/saved" className="block">
+          <Link href={`/companies/${topCompany.id}`} className="block">
             <ScoutCardHeader>
               <ScoutCardTitle>
                 <span className="flex items-center gap-2">
-                  <Bookmark size={16} className="text-[var(--scout-accent-blue)]" />
-                  Saved Searches
+                  <TrendingUp size={16} className="text-[var(--scout-accent-blue)]" />
+                  Top Rated
                 </span>
               </ScoutCardTitle>
-              <ScoutBadge variant="blue" size="sm">Saved</ScoutBadge>
+              <ScoutBadge variant="blue" size="sm">{topCompany.score}</ScoutBadge>
             </ScoutCardHeader>
             <ScoutCardContent>
-              <p className="text-3xl font-bold text-[var(--scout-text-heading)]">—</p>
+              <p className="text-3xl font-bold text-[var(--scout-text-heading)]">{topCompany.name}</p>
               <p className="text-sm text-[var(--scout-text-muted)] mt-1">
-                Saved queries
+                {topCompany.sector} · {topCompany.stage}
               </p>
             </ScoutCardContent>
           </Link>
         </ScoutCard>
       </div>
 
-      {/* Design System Showcase */}
-      <ScoutCard>
-        <ScoutCardHeader>
-          <ScoutCardTitle>
-            <span className="flex items-center gap-2">
-              <Target size={16} className="text-[var(--scout-accent-teal)]" />
-              Design System
-            </span>
-          </ScoutCardTitle>
-          <span className="text-meta">Phase 1</span>
-        </ScoutCardHeader>
-        <ScoutCardContent className="space-y-6">
-          {/* Buttons */}
-          <div>
-            <p className="text-meta mb-3">Button Variants</p>
-            <div className="flex flex-wrap items-center gap-3">
-              <ScoutButton variant="primary">Primary</ScoutButton>
-              <ScoutButton variant="secondary">Secondary</ScoutButton>
-              <ScoutButton variant="ghost">Ghost</ScoutButton>
-              <ScoutButton variant="danger">Danger</ScoutButton>
-              <ScoutButton variant="muted">Muted</ScoutButton>
-              <ScoutButton variant="primary" loading>Loading</ScoutButton>
-            </div>
-          </div>
-
-          {/* Badges */}
-          <div>
-            <p className="text-meta mb-3">Badge Variants</p>
-            <div className="flex flex-wrap items-center gap-2">
-              <ScoutBadge variant="teal">Teal</ScoutBadge>
-              <ScoutBadge variant="purple">Purple</ScoutBadge>
-              <ScoutBadge variant="blue">Blue</ScoutBadge>
-              <ScoutBadge variant="warning">Warning</ScoutBadge>
-              <ScoutBadge variant="error">Error</ScoutBadge>
-              <ScoutBadge variant="success">Success</ScoutBadge>
-            </div>
-          </div>
-
-          {/* Stage Badges */}
-          <div>
-            <p className="text-meta mb-3">Stage Badges</p>
-            <div className="flex flex-wrap items-center gap-2">
-              <StageBadge stage="Pre-Seed" />
-              <StageBadge stage="Seed" />
-              <StageBadge stage="Series A" />
-              <StageBadge stage="Series B" />
-              <StageBadge stage="Series C" />
-              <StageBadge stage="Growth" />
-            </div>
-          </div>
-
-          {/* Colors */}
-          <div>
-            <p className="text-meta mb-3">Color Palette</p>
-            <div className="flex gap-2">
-              <div className="w-10 h-10 rounded-lg bg-[var(--scout-bg-primary)] border border-[var(--scout-border)]" title="Primary BG" />
-              <div className="w-10 h-10 rounded-lg bg-[var(--scout-bg-secondary)]" title="Secondary BG" />
-              <div className="w-10 h-10 rounded-lg bg-[var(--scout-bg-card)]" title="Card BG" />
-              <div className="w-10 h-10 rounded-lg bg-[var(--scout-accent-teal)]" title="Accent Teal" />
-              <div className="w-10 h-10 rounded-lg bg-[var(--scout-accent-purple)]" title="Accent Purple" />
-              <div className="w-10 h-10 rounded-lg bg-[var(--scout-accent-blue)]" title="Accent Blue" />
-              <div className="w-10 h-10 rounded-lg bg-[var(--scout-warning)]" title="Warning" />
-              <div className="w-10 h-10 rounded-lg bg-[var(--scout-error)]" title="Error" />
-              <div className="w-10 h-10 rounded-lg bg-[var(--scout-success)]" title="Success" />
-            </div>
-          </div>
-        </ScoutCardContent>
-      </ScoutCard>
-
       {/* Getting Started */}
       <ScoutCard>
         <ScoutCardHeader>
           <ScoutCardTitle>
             <span className="flex items-center gap-2">
-              <TrendingUp size={16} className="text-[var(--scout-accent-teal)]" />
+              <Zap size={16} className="text-[var(--scout-accent-teal)]" />
               Get Started
             </span>
           </ScoutCardTitle>
@@ -174,7 +116,7 @@ export default function Home() {
                   → Explore Companies
                 </h3>
                 <p className="text-sm text-[var(--scout-text-muted)] mt-1">
-                  Browse and filter the startup database
+                  Browse, filter, and sort {totalCompanies} startups in the database
                 </p>
               </div>
             </Link>

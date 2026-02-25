@@ -17,15 +17,15 @@ Based on the 8 documentation files, following the implementation roadmap strictl
 - [x] Create reusable Button, Card, Badge components
 - [ ] Commit: "Phase 1: Core layout and design system"
 
-## Phase 2 — Companies Discovery System
-- [ ] Create mock company dataset (20+ companies)
-- [ ] Define Company interface in `/types/company.ts`
-- [ ] Build Companies table component with columns
-- [ ] Add filter dropdowns (Stage, Sector, Country)
-- [ ] Implement sorting (Score, Raised, Latest Signal)
-- [ ] Implement pagination
-- [ ] Create Save Search modal
-- [ ] Persist saved searches in localStorage
+## Phase 2 — Companies Discovery System ✅
+- [x] Create mock company dataset (20+ companies)
+- [x] Define Company interface in `/types/company.ts`
+- [x] Build Companies table component with columns
+- [x] Add filter dropdowns (Stage, Sector, Country)
+- [x] Implement sorting (Score, Raised, Latest Signal)
+- [x] Implement pagination
+- [x] Create Save Search modal
+- [x] Persist saved searches in localStorage
 - [ ] Commit: "Phase 2: Companies discovery system"
 
 ## Phase 3 — Company Profile System
