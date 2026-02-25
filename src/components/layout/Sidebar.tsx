@@ -1,0 +1,160 @@
+"use client";
+
+import { usePathname } from "next/navigation";
+import Link from "next/link";
+import {
+  Building2,
+  ListChecks,
+  Bookmark,
+  Search,
+  Settings,
+  ChevronLeft,
+  ChevronRight,
+  Zap,
+} from "lucide-react";
+import { useState } from "react";
+
+interface NavItem {
+  label: string;
+  href: string;
+  icon: React.ReactNode;
+}
+
+const primaryNav: NavItem[] = [
+  {
+    label: "Companies",
+    href: "/companies",
+    icon: <Building2 size={18} />,
+  },
+  {
+    label: "Lists",
+    href: "/lists",
+    icon: <ListChecks size={18} />,
+  },
+  {
+    label: "Saved",
+    href: "/saved",
+    icon: <Bookmark size={18} />,
+  },
+];
+
+const secondaryNav: NavItem[] = [
+  {
+    label: "Settings",
+    href: "/settings",
+    icon: <Settings size={18} />,
+  },
+];
+
+export default function Sidebar() {
+  const pathname = usePathname();
+  const [collapsed, setCollapsed] = useState(false);
+
+  const isActive = (href: string) => {
+    if (href === "/") return pathname === "/";
+    return pathname.startsWith(href);
+  };
+
+  return (
+    <>
+      {/* Mobile overlay */}
+      <aside
+        id="sidebar"
+        className={`
+          fixed top-0 left-0 z-40 h-screen flex flex-col
+          bg-[var(--scout-bg-primary)] border-r border-[var(--scout-border)]
+          transition-all duration-300 ease-in-out
+          ${collapsed ? "w-[68px]" : "w-[240px]"}
+        `}
+      >
+        {/* Logo */}
+        <div className="flex items-center justify-between h-16 px-4 border-b border-[var(--scout-border)]">
+          <Link href="/" className="flex items-center gap-2 overflow-hidden">
+            <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-[var(--scout-accent-teal)]/10 flex-shrink-0">
+              <Zap size={18} className="text-[var(--scout-accent-teal)]" />
+            </div>
+            {!collapsed && (
+              <span className="text-lg font-semibold text-[var(--scout-text-heading)] whitespace-nowrap fade-in">
+                ScoutVC
+              </span>
+            )}
+          </Link>
+          <button
+            id="sidebar-toggle"
+            onClick={() => setCollapsed(!collapsed)}
+            className="p-1 rounded-md text-[var(--scout-text-muted)] hover:text-[var(--scout-text-primary)] hover:bg-[var(--scout-border-light)] transition-scout"
+            aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+          >
+            {collapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
+          </button>
+        </div>
+
+        {/* Primary Nav */}
+        <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
+          <div className={`mb-3 ${collapsed ? "hidden" : ""}`}>
+            <span className="text-meta px-3">Discovery</span>
+          </div>
+          {primaryNav.map((item) => {
+            const active = isActive(item.href);
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                id={`nav-${item.label.toLowerCase()}`}
+                className={`
+                  group flex items-center gap-3 px-3 py-2.5 rounded-lg
+                  transition-scout relative
+                  ${
+                    active
+                      ? "bg-[var(--scout-accent-teal)]/8 text-[var(--scout-accent-teal)]"
+                      : "text-[var(--scout-text-muted)] hover:text-[var(--scout-text-primary)] hover:bg-white/[0.03]"
+                  }
+                `}
+              >
+                {/* Active indicator bar */}
+                {active && (
+                  <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 rounded-r-full bg-[var(--scout-accent-teal)]" />
+                )}
+                <span className="flex-shrink-0">{item.icon}</span>
+                {!collapsed && (
+                  <span className="text-sm font-medium whitespace-nowrap fade-in">
+                    {item.label}
+                  </span>
+                )}
+              </Link>
+            );
+          })}
+        </nav>
+
+        {/* Secondary Nav */}
+        <div className="px-3 py-4 border-t border-[var(--scout-border)] space-y-1">
+          {secondaryNav.map((item) => {
+            const active = isActive(item.href);
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                id={`nav-${item.label.toLowerCase()}`}
+                className={`
+                  flex items-center gap-3 px-3 py-2.5 rounded-lg transition-scout
+                  ${
+                    active
+                      ? "bg-[var(--scout-accent-teal)]/8 text-[var(--scout-accent-teal)]"
+                      : "text-[var(--scout-text-muted)] hover:text-[var(--scout-text-primary)] hover:bg-white/[0.03]"
+                  }
+                `}
+              >
+                <span className="flex-shrink-0">{item.icon}</span>
+                {!collapsed && (
+                  <span className="text-sm font-medium whitespace-nowrap fade-in">
+                    {item.label}
+                  </span>
+                )}
+              </Link>
+            );
+          })}
+        </div>
+      </aside>
+    </>
+  );
+}

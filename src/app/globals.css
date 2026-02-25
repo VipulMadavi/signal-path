@@ -1,0 +1,244 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+/* ===== ScoutVC Design System ===== */
+@theme inline {
+  /* Font families */
+  --font-sans: var(--font-geist-sans), "Inter", system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), "Fira Code", monospace;
+
+  /* Shadcn color mappings */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  /* Sidebar */
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  /* Charts */
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+
+  /* Radii */
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: calc(var(--radius) + 12px);
+  --radius-4xl: calc(var(--radius) + 16px);
+}
+
+/* ===== ScoutVC Dark Theme (Default) ===== */
+:root {
+  --radius: 0.625rem;
+
+  /* Core Background Palette */
+  --background: #0B0F14;
+  --foreground: #E5E7EB;
+
+  /* Card Surface */
+  --card: #0F172A;
+  --card-foreground: #E5E7EB;
+
+  /* Popover */
+  --popover: #111827;
+  --popover-foreground: #E5E7EB;
+
+  /* Primary Accent (Teal) */
+  --primary: #00E6A8;
+  --primary-foreground: #0B0F14;
+
+  /* Secondary Surface */
+  --secondary: #111827;
+  --secondary-foreground: #E5E7EB;
+
+  /* Muted */
+  --muted: #1F2937;
+  --muted-foreground: #6B7280;
+
+  /* Accent */
+  --accent: #111827;
+  --accent-foreground: #E5E7EB;
+
+  /* Destructive */
+  --destructive: #EF4444;
+
+  /* Borders & Inputs */
+  --border: rgba(255, 255, 255, 0.06);
+  --input: rgba(255, 255, 255, 0.1);
+  --ring: #00E6A8;
+
+  /* Chart colors */
+  --chart-1: #00E6A8;
+  --chart-2: #3B82F6;
+  --chart-3: #8B5CF6;
+  --chart-4: #F59E0B;
+  --chart-5: #EF4444;
+
+  /* Sidebar */
+  --sidebar: #0B0F14;
+  --sidebar-foreground: #E5E7EB;
+  --sidebar-primary: #00E6A8;
+  --sidebar-primary-foreground: #0B0F14;
+  --sidebar-accent: rgba(255, 255, 255, 0.05);
+  --sidebar-accent-foreground: #E5E7EB;
+  --sidebar-border: rgba(255, 255, 255, 0.06);
+  --sidebar-ring: #00E6A8;
+
+  /* ScoutVC custom tokens */
+  --scout-bg-primary: #0B0F14;
+  --scout-bg-secondary: #111827;
+  --scout-bg-card: #0F172A;
+  --scout-border: rgba(255, 255, 255, 0.06);
+  --scout-border-light: rgba(255, 255, 255, 0.1);
+  --scout-accent-teal: #00E6A8;
+  --scout-accent-purple: #8B5CF6;
+  --scout-accent-blue: #3B82F6;
+  --scout-warning: #F59E0B;
+  --scout-error: #EF4444;
+  --scout-success: #10B981;
+  --scout-text-primary: #E5E7EB;
+  --scout-text-muted: #6B7280;
+  --scout-text-heading: #F9FAFB;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Typography */
+  h1 {
+    font-size: 32px;
+    line-height: 36px;
+    font-weight: 600;
+    color: var(--scout-text-heading);
+  }
+
+  h2 {
+    font-size: 24px;
+    line-height: 28px;
+    font-weight: 600;
+    color: var(--scout-text-heading);
+  }
+
+  h3 {
+    font-size: 18px;
+    line-height: 24px;
+    font-weight: 500;
+    color: var(--scout-text-heading);
+  }
+
+  /* Scrollbar Styling */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 999px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.2);
+  }
+}
+
+/* ===== Motion System ===== */
+@layer utilities {
+  .transition-scout {
+    transition: all 200ms ease-in-out;
+  }
+
+  .hover-glow {
+    transition: box-shadow 200ms ease-in-out;
+  }
+
+  .hover-glow:hover {
+    box-shadow: 0 0 20px rgba(0, 230, 168, 0.15);
+  }
+
+  .shimmer {
+    background: linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(255, 255, 255, 0.04) 50%,
+      rgba(255, 255, 255, 0) 100%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s ease-in-out infinite;
+  }
+
+  @keyframes shimmer {
+    0% {
+      background-position: 200% 0;
+    }
+    100% {
+      background-position: -200% 0;
+    }
+  }
+
+  .fade-in {
+    animation: fadeIn 250ms ease-in-out;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(4px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Meta text style */
+  .text-meta {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 400;
+    color: var(--scout-text-muted);
+  }
+}
