@@ -33,6 +33,7 @@ import SignalTimeline from "@/components/timeline/SignalTimeline";
 import ScoreBreakdownPanel from "@/components/score/ScoreBreakdownPanel";
 import CompanyNotesPanel from "@/components/cards/CompanyNotesPanel";
 import SaveToListModal from "@/components/lists/SaveToListModal";
+import EnrichmentPanel from "@/components/enrichment/EnrichmentPanel";
 import { useListStore } from "@/store/useListStore";
 
 function formatRaised(amount?: number): string {
@@ -328,6 +329,18 @@ export default function CompanyProfilePage() {
               )}
             </ScoutCardContent>
           </ScoutCard>
+
+          {/* Live Enrichment */}
+          <ScoutCard>
+            <ScoutCardContent>
+              <EnrichmentPanel
+                companyId={companyId}
+                companyName={company.name}
+                websiteUrl={company.website}
+              />
+            </ScoutCardContent>
+          </ScoutCard>
+
 
           {/* Lists this company belongs to */}
           {companyLists.length > 0 && (

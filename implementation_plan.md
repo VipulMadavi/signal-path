@@ -1,5 +1,7 @@
 # ScoutVC — Full Implementation Plan
 
+> **Note:** This is the summary implementation plan. The full detailed spec lives in `docs/implementation_plan.md`. For current build priority and execution order, always refer to `task.md` in the project root — it is the authoritative task tracker.
+
 Build a thesis-first venture intelligence platform (Next.js App Router + TypeScript + TailwindCSS + Shadcn/UI) following the 8 documentation files exactly. All phases are sequential; each phase gets its own git commit.
 
 ## User Review Required

@@ -71,16 +71,16 @@ Based on the 8 documentation files, following the implementation roadmap strictl
 - [ ] Display total score in companies table
 - [ ] Commit: "Phase 5: Scoring engine"
 
-## Phase 6 — Live Enrichment (Server-Side)
-- [ ] Create `/api/enrich/route.ts`
-- [ ] Add URL validation + SSRF protection
-- [ ] Implement website fetch with timeout
-- [ ] Extract readable text from HTML
-- [ ] Call LLM with structured prompt
-- [ ] Parse JSON response
-- [ ] Return enrichment object
-- [ ] Add rate limiting
-- [ ] Add error handling
+## Phase 6 — Live Enrichment (Server-Side) ✅
+- [x] Create `/api/enrich/route.ts`
+- [x] Add URL validation + SSRF protection
+- [x] Implement website fetch with timeout
+- [x] Extract readable text from HTML
+- [x] Call LLM with structured prompt
+- [x] Parse JSON response
+- [x] Return enrichment object
+- [x] Add rate limiting
+- [x] Add error handling
 - [ ] Commit: "Phase 6: Live enrichment"
 
 ## Phase 7 — Caching & State Management

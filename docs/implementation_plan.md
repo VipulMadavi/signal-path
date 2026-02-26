@@ -3,6 +3,10 @@
 
 ---
 
+> **⚠️ PRIORITY OVERRIDE:** The execution order of remaining phases has been updated. See `task.md` in the project root for the current build priority. `task.md` takes precedence over the phase ordering listed below for any incomplete phases.
+
+---
+
 # 1. Overview
 
 This document defines:
