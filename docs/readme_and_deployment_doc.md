@@ -1,12 +1,12 @@
 ```markdown id="k4z8qp"
 # README & Deployment Guide
-## ScoutVC — VC Intelligence Interface + Live Enrichment
+## SignalPath — VC Intelligence Interface + Live Enrichment
 
 ---
 
 # 1. Project Overview
 
-ScoutVC is a thesis-first venture intelligence platform that enables:
+SignalPath is a thesis-first venture intelligence platform that enables:
 
 Discover → Evaluate → Enrich → Score → Save → Export
 
@@ -103,7 +103,7 @@ All enrichment runs server-side to protect API keys.
 ```
 
 git clone <your-repo-url>
-cd scoutvc
+cd signalpath
 
 ```
 

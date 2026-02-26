@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "ScoutVC — Venture Intelligence Platform",
+  title: "SignalPath — Venture Intelligence Platform",
   description:
     "Thesis-first venture intelligence platform. Discover, enrich, and score startups with AI-powered signals.",
 };

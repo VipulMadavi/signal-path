@@ -1,6 +1,6 @@
-# ScoutVC 🚀
+# SignalPath 🚀
 
-**ScoutVC** is a premium, thesis-first venture intelligence platform designed for modern VCs to discover, track, and analyze startups. It combines deep data visualization with AI-powered enrichment to provide a competitive edge in deal sourcing.
+**SignalPath** is a premium, thesis-first venture intelligence platform designed for modern VCs to discover, track, and analyze startups. It combines deep data visualization with AI-powered enrichment to provide a competitive edge in deal sourcing.
 
 ---
 
@@ -38,7 +38,7 @@
 1. **Clone the repository**:
    ```bash
    git clone <your-repo-url>
-   cd scoutvc
+   cd signalpath
    ```
 
 2. **Install dependencies**:
@@ -52,7 +52,7 @@
    OPENAI_API_KEY=your_api_key_here
    ```
    > [!IMPORTANT]
-   > The `OPENAI_API_KEY` is required for Phase 6 (Live Enrichment). Other features work with mock data.
+   > The `OPENAI_API_KEY` is required for Live Enrichment. Other features work with mock data.
 
 4. **Run the development server**:
    ```bash
@@ -81,10 +81,14 @@ src/
 
 - [x] **Phase 0-1**: Project setup and core design system.
 - [x] **Phase 2**: Companies Discovery System (Filterable Table).
-- [ ] **Phase 3**: Company Profile System (Interactive Timelines).
-- [ ] **Phase 5**: Weighted Scoring Engine.
-- [ ] **Phase 6**: Live AI Enrichment.
+- [x] **Phase 3**: Company Profile System (Interactive Timelines).
+- [x] **Phase 4**: Lists & Saved Searches.
+- [x] **Phase 5**: Weighted Scoring Engine.
+- [x] **Phase 6**: Live AI Enrichment.
+- [ ] **Phase 7**: Caching & State Management.
 - [ ] **Phase 8**: UI Polish & Motion system.
+- [ ] **Phase 9**: Testing & Hardening.
+- [ ] **Phase 10**: Production Deployment.
 
 ---
 

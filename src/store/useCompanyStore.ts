@@ -9,7 +9,7 @@ function generateId(): string {
 }
 
 // ─── LocalStorage keys ───
-const LS_SAVED_SEARCHES = "scoutvc_saved_searches";
+const LS_SAVED_SEARCHES = "signalpath_saved_searches";
 
 // ─── Load saved searches from localStorage ───
 function loadSavedSearches(): SavedSearch[] {

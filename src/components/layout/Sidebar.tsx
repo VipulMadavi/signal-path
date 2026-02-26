@@ -75,7 +75,7 @@ export default function Sidebar() {
             </div>
             {!collapsed && (
               <span className="text-lg font-semibold text-[var(--scout-text-heading)] whitespace-nowrap fade-in">
-                ScoutVC
+                SignalPath
               </span>
             )}
           </Link>

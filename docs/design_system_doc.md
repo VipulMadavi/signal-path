@@ -1,11 +1,11 @@
 # Design System Document
-## ScoutVC — Premium Venture Intelligence Interface
+## SignalPath — Premium Venture Intelligence Interface
 
 ---
 
 # 1. Design Philosophy
 
-ScoutVC is designed as a high-signal, premium intelligence tool. The UI must feel:
+SignalPath is designed as a high-signal, premium intelligence tool. The UI must feel:
 
 - Professional
 - Data-dense but readable
@@ -414,7 +414,7 @@ Behavior:
 
 # 14. Visual Tone Summary
 
-ScoutVC should feel like:
+SignalPath should feel like:
 
 - A Bloomberg terminal for startups
 - An AI-native intelligence engine

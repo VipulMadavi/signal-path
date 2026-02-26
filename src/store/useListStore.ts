@@ -4,7 +4,7 @@ import { create } from "zustand";
 import type { VCList } from "@/types/company";
 
 // ─── LocalStorage key ───
-const LS_LISTS_KEY = "scoutvc_lists";
+const LS_LISTS_KEY = "signalpath_lists";
 
 // ─── Generate unique IDs ───
 function generateId(): string {

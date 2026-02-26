@@ -27,7 +27,7 @@ export default function Home() {
           </div>
           <div>
             <h1 className="text-2xl font-semibold text-[var(--scout-text-heading)]">
-              Welcome to ScoutVC
+              Welcome to SignalPath
             </h1>
             <p className="text-sm text-[var(--scout-text-muted)]">
               Your thesis-first venture intelligence platform

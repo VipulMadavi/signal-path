@@ -5,7 +5,7 @@ import type { CompanyNote } from "@/types/company";
 import { StickyNote, Plus, Trash2, Pencil, Check, X } from "lucide-react";
 import { ScoutButton } from "@/components/ui/ScoutButton";
 
-const LS_NOTES_KEY = "scoutvc_notes";
+const LS_NOTES_KEY = "signalpath_notes";
 
 // ─── LocalStorage helpers ───
 function loadNotes(): CompanyNote[] {

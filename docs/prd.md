@@ -1,22 +1,22 @@
 # Product Requirements Document (PRD)
-## ScoutVC — Precision AI Scout for Venture Capital
+## SignalPath — Precision AI Scout for Venture Capital
 
 ---
 
 # 1. Overview
 
 ## 1.1 Product Name
-ScoutVC
+SignalPath
 
 ## 1.2 Product Vision
 
-ScoutVC is a thesis-first venture intelligence platform designed to transform fragmented VC sourcing workflows into a structured, explainable, always-on discovery engine.
+SignalPath is a thesis-first venture intelligence platform designed to transform fragmented VC sourcing workflows into a structured, explainable, always-on discovery engine.
 
 The system enables:
 
 Discover → Evaluate → Enrich → Score → Save → Export
 
-ScoutVC reduces noise, surfaces high-signal companies earlier, and ensures that every surfaced opportunity is explainable and aligned with the fund’s thesis.
+SignalPath reduces noise, surfaces high-signal companies earlier, and ensures that every surfaced opportunity is explainable and aligned with the fund’s thesis.
 
 ---
 

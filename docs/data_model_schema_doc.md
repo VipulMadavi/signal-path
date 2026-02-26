@@ -1,12 +1,12 @@
     ````markdown
 # Data Model & Schema Document
-## ScoutVC — Data Structures and Storage Specification
+## SignalPath — Data Structures and Storage Specification
 
 ---
 
 # 1. Overview
 
-This document defines all data models, interfaces, schemas, and storage structures required for the ScoutVC MVP.
+This document defines all data models, interfaces, schemas, and storage structures required for the SignalPath MVP.
 
 The goal is to ensure:
 
@@ -249,7 +249,7 @@ All persisted under structured keys.
 ## 10.1 Lists Storage
 
 Key:
-`scoutvc_lists`
+`signalpath_lists`
 
 Value:
 
@@ -262,7 +262,7 @@ VCList[]
 ## 10.2 Saved Searches Storage
 
 Key:
-`scoutvc_saved_searches`
+`signalpath_saved_searches`
 
 Value:
 
@@ -275,7 +275,7 @@ SavedSearch[]
 ## 10.3 Enrichment Cache
 
 Key:
-`scoutvc_enrichment_cache`
+`signalpath_enrichment_cache`
 
 Value:
 
@@ -293,7 +293,7 @@ Structure:
 ## 10.4 Notes Storage
 
 Key:
-`scoutvc_notes`
+`signalpath_notes`
 
 Value:
 

@@ -1,6 +1,6 @@
 ```markdown
 # API & Enrichment Specification Document
-## ScoutVC — Server-Side Intelligence & Live Enrichment
+## SignalPath — Server-Side Intelligence & Live Enrichment
 
 ---
 

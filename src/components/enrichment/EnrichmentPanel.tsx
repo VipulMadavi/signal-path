@@ -21,7 +21,7 @@ import { ScoutBadge } from "@/components/ui/ScoutBadge";
 import type { Enrichment } from "@/types/company";
 
 // ─── localStorage cache helpers ───
-const LS_ENRICHMENT_PREFIX = "scoutvc_enrichment_";
+const LS_ENRICHMENT_PREFIX = "signalpath_enrichment_";
 
 function getCachedEnrichment(companyId: string): Enrichment | null {
   if (typeof window === "undefined") return null;

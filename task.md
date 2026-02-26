@@ -1,4 +1,4 @@
-# ScoutVC — Full Build Task List
+# SignalPath — Full Build Task List
 
 ## ⚠️ AI Agent: Follow This Priority Order
 

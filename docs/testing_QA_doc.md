@@ -1,5 +1,5 @@
 # Testing, QA & Production Hardening Document
-## ScoutVC — Quality Assurance & Release Readiness Specification
+## SignalPath — Quality Assurance & Release Readiness Specification
 
 ---
 

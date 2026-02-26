@@ -1,4 +1,4 @@
-# ScoutVC — Full Implementation Plan
+# SignalPath — Full Implementation Plan
 
 > **Note:** This is the summary implementation plan. The full detailed spec lives in `docs/implementation_plan.md`. For current build priority and execution order, always refer to `task.md` in the project root — it is the authoritative task tracker.
 

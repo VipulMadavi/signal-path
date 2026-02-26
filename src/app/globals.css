@@ -4,7 +4,7 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/* ===== ScoutVC Design System ===== */
+/* ===== SignalPath Design System ===== */
 @theme inline {
   /* Font families */
   --font-sans: var(--font-geist-sans), "Inter", system-ui, sans-serif;
@@ -57,7 +57,7 @@
   --radius-4xl: calc(var(--radius) + 16px);
 }
 
-/* ===== ScoutVC Dark Theme (Default) ===== */
+/* ===== SignalPath Dark Theme (Default) ===== */
 :root {
   --radius: 0.625rem;
 
@@ -114,7 +114,7 @@
   --sidebar-border: rgba(255, 255, 255, 0.06);
   --sidebar-ring: #00E6A8;
 
-  /* ScoutVC custom tokens */
+  /* SignalPath custom tokens */
   --scout-bg-primary: #0B0F14;
   --scout-bg-secondary: #111827;
   --scout-bg-card: #0F172A;

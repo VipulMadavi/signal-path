@@ -84,7 +84,7 @@ export async function fetchWebsite(
       signal: controller.signal,
       headers: {
         "User-Agent":
-          "Mozilla/5.0 (compatible; ScoutVC/1.0; +https://scoutvc.app)",
+          "Mozilla/5.0 (compatible; SignalPath/1.0; +https://signalpath.app)",
         Accept: "text/html,application/xhtml+xml",
       },
       redirect: "follow",

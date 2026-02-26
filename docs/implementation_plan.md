@@ -1,5 +1,5 @@
 # Implementation Roadmap & AI Agent Task Execution Plan
-## ScoutVC — End-to-End Build Blueprint
+## SignalPath — End-to-End Build Blueprint
 
 ---
 

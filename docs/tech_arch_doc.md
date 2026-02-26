@@ -1,12 +1,12 @@
 ```markdown
 # Technical Architecture Document
-## ScoutVC — Full Production Architecture
+## SignalPath — Full Production Architecture
 
 ---
 
 # 1. System Overview
 
-ScoutVC is a full-stack web application built using a modern server-first architecture. It consists of:
+SignalPath is a full-stack web application built using a modern server-first architecture. It consists of:
 
 - Client-side UI (Next.js App Router)
 - Server-side API routes (secure enrichment)
@@ -355,10 +355,10 @@ Scoring must:
 
 ## 11.1 localStorage Keys
 
-- `scoutvc_lists`
-- `scoutvc_saved_searches`
-- `scoutvc_enrichment_cache`
-- `scoutvc_notes`
+- `signalpath_lists`
+- `signalpath_saved_searches`
+- `signalpath_enrichment_cache`
+- `signalpath_notes`
 
 ---
 
