@@ -15,31 +15,45 @@ import {
   ChevronDown,
   ChevronUp,
   Lightbulb,
+  Bot,
+  Database,
 } from "lucide-react";
 import { ScoutButton } from "@/components/ui/ScoutButton";
 import { ScoutBadge } from "@/components/ui/ScoutBadge";
+import { useSettingsStore } from "@/store/useSettingsStore";
 import type { Enrichment } from "@/types/company";
+import type { AIProvider, EnrichmentCacheEntry } from "@/types/enrichment";
 
-// ─── localStorage cache helpers ───
-const LS_ENRICHMENT_PREFIX = "signalpath_enrichment_";
+// ─── localStorage cache helpers (centralized) ───
+const LS_ENRICHMENT_CACHE_KEY = "signalpath_enrichment_cache";
 
-function getCachedEnrichment(companyId: string): Enrichment | null {
+function getCachedEnrichment(companyId: string): EnrichmentCacheEntry | null {
   if (typeof window === "undefined") return null;
   try {
-    const data = localStorage.getItem(`${LS_ENRICHMENT_PREFIX}${companyId}`);
-    return data ? JSON.parse(data) : null;
+    const data = localStorage.getItem(LS_ENRICHMENT_CACHE_KEY);
+    if (!data) return null;
+    const cache = JSON.parse(data);
+    return cache[companyId] || null;
   } catch {
     return null;
   }
 }
 
-function setCachedEnrichment(companyId: string, data: Enrichment): void {
+function setCachedEnrichment(
+  companyId: string,
+  data: Enrichment,
+  provider: AIProvider
+): void {
   if (typeof window === "undefined") return;
   try {
-    localStorage.setItem(
-      `${LS_ENRICHMENT_PREFIX}${companyId}`,
-      JSON.stringify(data)
-    );
+    const raw = localStorage.getItem(LS_ENRICHMENT_CACHE_KEY);
+    const cache = raw ? JSON.parse(raw) : {};
+    cache[companyId] = {
+      data: { ...data, provider, cached: true },
+      cachedAt: new Date().toISOString(),
+      provider,
+    };
+    localStorage.setItem(LS_ENRICHMENT_CACHE_KEY, JSON.stringify(cache));
   } catch {
     // Silently fail on quota errors
   }
@@ -54,6 +68,12 @@ interface EnrichmentPanelProps {
   websiteUrl: string;
 }
 
+// ─── Provider display info ───
+const PROVIDER_INFO: Record<AIProvider, { name: string; color: string }> = {
+  openai: { name: "OpenAI", color: "var(--scout-accent-teal)" },
+  gemini: { name: "Gemini", color: "var(--scout-accent-blue)" },
+};
+
 export default function EnrichmentPanel({
   companyId,
   companyName,
@@ -63,50 +83,94 @@ export default function EnrichmentPanel({
   const [enrichment, setEnrichment] = useState<Enrichment | null>(null);
   const [error, setError] = useState<string>("");
   const [isExpanded, setIsExpanded] = useState(true);
+  const [usedProvider, setUsedProvider] = useState<AIProvider>("openai");
+  const [isCachedResult, setIsCachedResult] = useState(false);
+  const [cachedAt, setCachedAt] = useState<string | null>(null);
+  const [localProviderOverride, setLocalProviderOverride] = useState<AIProvider | null>(null);
+  const [showProviderPicker, setShowProviderPicker] = useState(false);
+
+  // Get global default provider
+  const { settings, loadSettingsFromStorage } = useSettingsStore();
+
+  useEffect(() => {
+    loadSettingsFromStorage();
+  }, [loadSettingsFromStorage]);
 
   // Load cached enrichment on mount
   useEffect(() => {
     const cached = getCachedEnrichment(companyId);
     if (cached) {
-      setEnrichment(cached);
+      setEnrichment(cached.data);
+      setUsedProvider(cached.provider || "openai");
+      setIsCachedResult(true);
+      setCachedAt(cached.cachedAt);
       setState("success");
     }
   }, [companyId]);
 
-  const handleEnrich = useCallback(async () => {
-    setState("loading");
-    setError("");
+  // Determine which provider to use
+  const activeProvider = localProviderOverride || settings.defaultProvider;
 
-    try {
-      const response = await fetch("/api/enrich", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ companyId, url: websiteUrl }),
-      });
+  const handleEnrich = useCallback(
+    async (skipCache = false) => {
+      setState("loading");
+      setError("");
+      setIsCachedResult(false);
 
-      const data = await response.json();
-
-      if (!response.ok || !data.success) {
-        const errorMsg =
-          response.status === 429
-            ? "Rate limit exceeded. Please wait a moment and try again."
-            : response.status === 504
-              ? "The website took too long to respond. Try again later."
-              : data.error || "Enrichment failed. Please try again.";
-        setError(errorMsg);
-        setState("error");
-        return;
+      // Check local cache first (unless explicitly skipping)
+      if (!skipCache) {
+        const cached = getCachedEnrichment(companyId);
+        if (cached) {
+          setEnrichment(cached.data);
+          setUsedProvider(cached.provider || "openai");
+          setIsCachedResult(true);
+          setCachedAt(cached.cachedAt);
+          setState("success");
+          return;
+        }
       }
 
-      const enrichmentData: Enrichment = data.data;
-      setEnrichment(enrichmentData);
-      setCachedEnrichment(companyId, enrichmentData);
-      setState("success");
-    } catch (err) {
-      setError("Network error. Please check your connection and try again.");
-      setState("error");
-    }
-  }, [companyId, websiteUrl]);
+      try {
+        const response = await fetch("/api/enrich", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            companyId,
+            url: websiteUrl,
+            provider: activeProvider,
+          }),
+        });
+
+        const data = await response.json();
+
+        if (!response.ok || !data.success) {
+          const errorMsg =
+            response.status === 429
+              ? "Rate limit exceeded. Please wait a moment and try again."
+              : response.status === 504
+                ? "The website took too long to respond. Try again later."
+                : data.error || "Enrichment failed. Please try again.";
+          setError(errorMsg);
+          setState("error");
+          return;
+        }
+
+        const enrichmentData: Enrichment = data.data;
+        const provider: AIProvider = data.provider || activeProvider;
+
+        setEnrichment(enrichmentData);
+        setUsedProvider(provider);
+        setIsCachedResult(data.cached || false);
+        setCachedAt(data.cached ? new Date().toISOString() : null);
+        setCachedEnrichment(companyId, enrichmentData, provider);
+        setState("success");
+      } catch {
+        setError("Network error. Please check your connection and try again.");
+        setState("error");
+      }
+    },
+    [companyId, websiteUrl, activeProvider]
+  );
 
   // Format timestamp
   const formatTimestamp = (iso: string): string => {
@@ -119,6 +183,8 @@ export default function EnrichmentPanel({
       minute: "2-digit",
     });
   };
+
+  const providerInfo = PROVIDER_INFO[usedProvider] || PROVIDER_INFO.openai;
 
   return (
     <div className="space-y-0">
@@ -136,14 +202,40 @@ export default function EnrichmentPanel({
             </span>
           )}
         </div>
-        {state === "success" && (
-          <button
-            onClick={() => setIsExpanded(!isExpanded)}
-            className="p-1 rounded hover:bg-white/[0.06] text-[var(--scout-text-muted)] transition-colors"
-          >
-            {isExpanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
-          </button>
-        )}
+        <div className="flex items-center gap-1.5">
+          {/* Provider indicator */}
+          {state === "success" && (
+            <div className="flex items-center gap-1.5">
+              {isCachedResult && (
+                <span className="flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-[var(--scout-accent-blue)]/8 border border-[var(--scout-accent-blue)]/15 text-[10px] text-[var(--scout-accent-blue)]">
+                  <Database size={9} />
+                  Cached
+                </span>
+              )}
+              <span
+                className="flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[10px]"
+                style={{
+                  background: `color-mix(in srgb, ${providerInfo.color} 8%, transparent)`,
+                  borderColor: `color-mix(in srgb, ${providerInfo.color} 15%, transparent)`,
+                  color: providerInfo.color,
+                  borderWidth: "1px",
+                  borderStyle: "solid",
+                }}
+              >
+                <Bot size={9} />
+                {providerInfo.name}
+              </span>
+            </div>
+          )}
+          {state === "success" && (
+            <button
+              onClick={() => setIsExpanded(!isExpanded)}
+              className="p-1 rounded hover:bg-white/[0.06] text-[var(--scout-text-muted)] transition-colors"
+            >
+              {isExpanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+            </button>
+          )}
+        </div>
       </div>
 
       {/* ═══ IDLE State ═══ */}
@@ -162,10 +254,63 @@ export default function EnrichmentPanel({
             <span className="truncate">{websiteUrl}</span>
           </div>
 
+          {/* Provider selector for this enrichment */}
+          <div className="relative">
+            <button
+              onClick={() => setShowProviderPicker(!showProviderPicker)}
+              className="flex items-center gap-2 w-full px-3 py-2 rounded-lg bg-white/[0.03] border border-[var(--scout-border)] hover:border-white/15 text-xs text-[var(--scout-text-muted)] hover:text-[var(--scout-text-primary)] transition-all duration-200"
+            >
+              <Bot size={12} style={{ color: PROVIDER_INFO[activeProvider].color }} />
+              <span className="flex-1 text-left">
+                Model: <span className="text-[var(--scout-text-primary)] font-medium">{PROVIDER_INFO[activeProvider].name}</span>
+              </span>
+              <ChevronDown
+                size={12}
+                className={`transition-transform duration-200 ${showProviderPicker ? "rotate-180" : ""}`}
+              />
+            </button>
+
+            {showProviderPicker && (
+              <div className="absolute left-0 right-0 top-full mt-1 z-10 rounded-lg border border-[var(--scout-border)] bg-[var(--scout-bg-secondary)] shadow-lg shadow-black/30 overflow-hidden fade-in">
+                {(["openai", "gemini"] as AIProvider[]).map((p) => (
+                  <button
+                    key={p}
+                    onClick={() => {
+                      setLocalProviderOverride(p);
+                      setShowProviderPicker(false);
+                    }}
+                    className={`w-full flex items-center gap-2 px-3 py-2 text-xs text-left transition-colors ${
+                      activeProvider === p
+                        ? "bg-[var(--scout-accent-teal)]/8 text-[var(--scout-text-primary)]"
+                        : "text-[var(--scout-text-muted)] hover:text-[var(--scout-text-primary)] hover:bg-white/[0.04]"
+                    }`}
+                  >
+                    <Bot size={12} style={{ color: PROVIDER_INFO[p].color }} />
+                    <span>{PROVIDER_INFO[p].name}</span>
+                    {activeProvider === p && (
+                      <CheckCircle2 size={12} className="ml-auto text-[var(--scout-accent-teal)]" />
+                    )}
+                  </button>
+                ))}
+                {localProviderOverride && (
+                  <button
+                    onClick={() => {
+                      setLocalProviderOverride(null);
+                      setShowProviderPicker(false);
+                    }}
+                    className="w-full px-3 py-1.5 text-[10px] text-[var(--scout-text-muted)] hover:text-[var(--scout-text-primary)] border-t border-[var(--scout-border)] hover:bg-white/[0.02] transition-colors"
+                  >
+                    Reset to global default
+                  </button>
+                )}
+              </div>
+            )}
+          </div>
+
           <ScoutButton
             variant="primary"
             size="sm"
-            onClick={handleEnrich}
+            onClick={() => handleEnrich(false)}
             className="w-full"
           >
             <Sparkles size={14} />
@@ -193,7 +338,7 @@ export default function EnrichmentPanel({
                 Enriching {companyName}...
               </p>
               <p className="text-xs text-[var(--scout-text-muted)] mt-1">
-                Fetching and analyzing website content
+                Using {PROVIDER_INFO[activeProvider].name} • Fetching and analyzing website content
               </p>
             </div>
           </div>
@@ -233,7 +378,7 @@ export default function EnrichmentPanel({
           <ScoutButton
             variant="secondary"
             size="sm"
-            onClick={handleEnrich}
+            onClick={() => handleEnrich(true)}
             className="w-full"
           >
             <RefreshCw size={14} />
@@ -350,13 +495,21 @@ export default function EnrichmentPanel({
             </div>
           )}
 
-          {/* Timestamp + Re-enrich */}
+          {/* Timestamp + Cache info + Re-enrich */}
           <div className="flex items-center justify-between pt-2 border-t border-[var(--scout-border)]">
-            <span className="flex items-center gap-1.5 text-[10px] text-[var(--scout-text-muted)]">
-              <Clock size={10} />
-              Enriched {formatTimestamp(enrichment.scrapedAt)}
-            </span>
-            <ScoutButton variant="ghost" size="sm" onClick={handleEnrich}>
+            <div className="flex flex-col gap-0.5">
+              <span className="flex items-center gap-1.5 text-[10px] text-[var(--scout-text-muted)]">
+                <Clock size={10} />
+                Enriched {formatTimestamp(enrichment.scrapedAt)}
+              </span>
+              {isCachedResult && cachedAt && (
+                <span className="flex items-center gap-1.5 text-[10px] text-[var(--scout-text-muted)]">
+                  <Database size={10} />
+                  Cached {formatTimestamp(cachedAt)}
+                </span>
+              )}
+            </div>
+            <ScoutButton variant="ghost" size="sm" onClick={() => handleEnrich(true)}>
               <RefreshCw size={12} />
               Re-enrich
             </ScoutButton>

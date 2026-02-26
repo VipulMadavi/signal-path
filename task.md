@@ -12,7 +12,9 @@ These phases must be completed in the following order. Do NOT skip ahead or work
 
 4. 🟢 **Phase 5 — Scoring Engine** ← Build this FOURTH. Replace mock score data with real `/lib/scoring.ts` logic using weighted formula. Mock data currently covers scores in the UI so this is lower urgency.
 
-5. 🟢 **Phase 8 & 9 — Polish & Hardening** ← Build this LAST. Skeleton loaders, hover animations, toast notifications, mobile responsiveness check, Lighthouse ≥ 85, no API key exposure.
+5. 🟠 **Phase 7 — Intelligence Infrastructure & Caching** ← Build this FIFTH. This is now expanded to include **Multi-LLM selection (OpenAI/Gemini)**, the Model Switcher UI, the missing `useSettingsStore`, and integrated caching.
+
+6. 🟢 **Phase 8 & 9 — Polish & Hardening** ← Build this LAST. Skeleton loaders, hover animations, toast notifications, mobile responsiveness check, Lighthouse ≥ 85, no API key exposure.
 
 ---
 
@@ -83,13 +85,17 @@ Based on the 8 documentation files, following the implementation roadmap strictl
 - [x] Add error handling
 - [ ] Commit: "Phase 6: Live enrichment"
 
-## Phase 7 — Caching & State Management
-- [ ] Store enrichment in localStorage
-- [ ] Check cache before fetch
-- [ ] Add timestamp label in UI
-- [ ] Use React Query for caching
-- [ ] Avoid redundant renders
-- [ ] Commit: "Phase 7: Caching and state management"
+## Phase 7 — Intelligence Infrastructure & Caching ✅
+- [x] Implement AI Provider Factory in `/lib/ai-provider.ts` (OpenAI + Gemini support)
+- [x] Create missing stores: `useSearchStore.ts` and `useSettingsStore.ts`
+- [x] Create missing type files: `enrichment.ts`, `list.ts`, `search.ts`
+- [x] Build Model Switcher dropdown component
+- [x] Integrate Model Switcher into `TopBar` and `EnrichmentPanel`
+- [x] Store enrichment results in localStorage (keyed by companyId)
+- [x] Check cache before triggering new AI fetch
+- [x] Add "Cached Result" badge and "Scraped At" timestamp in UI
+- [x] Use React Query for managing enrichment server state
+- [ ] Commit: "Phase 7: Intelligence infrastructure and caching"
 
 ## Phase 8 — UI Polish & Motion
 - [ ] Add skeleton loaders to enrichment

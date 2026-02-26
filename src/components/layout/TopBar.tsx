@@ -2,6 +2,7 @@
 
 import { Search, Bell, User, ChevronDown } from "lucide-react";
 import { useState } from "react";
+import ModelSwitcher from "@/components/layout/ModelSwitcher";
 
 export default function TopBar() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -60,6 +61,9 @@ export default function TopBar() {
           <span>Default Workspace</span>
           <ChevronDown size={14} />
         </button>
+
+        {/* AI Model Switcher */}
+        <ModelSwitcher />
 
         {/* Notifications */}
         <button

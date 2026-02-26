@@ -138,14 +138,24 @@ Build a thesis-first venture intelligence platform (Next.js App Router + TypeScr
 
 ---
 
-### Phase 7 — Caching & State Management
+### Phase 7 — Intelligence Infrastructure & Caching ✅
 
-#### [MODIFY] Enrichment flow
-- localStorage cache keyed by companyId
-- React Query integration
-- Cache timestamp display
+#### [NEW] Multi-LLM Engine & Persistence
+- Build AI Provider Factory: Logic to switch between OpenAI and Gemini in `/lib/enrichment.ts`.
+- Create `useSettingsStore.ts`: Persist user preference for "Default Model" (Gemini/OpenAI).
+- Create `useSearchStore.ts`: Dedicated store for filter configurations.
+- Create missing types: `/types/{enrichment.ts, list.ts, search.ts}`.
 
-**Commit: `Phase 7: Caching and state management`**
+#### [NEW] Model Switcher UI
+- Global dropdown in `TopBar`: Sets the default model for the workspace.
+- Contextual toggle in `EnrichmentPanel`: Allows overriding the model for a specific company.
+
+#### [MODIFY] Enrichment Flow
+- localStorage cache: Store results per provider or globally as needed.
+- React Query: Implement `useEnrichment` hook with error handling for different providers.
+- Cache indicators: Show "Model Used" vs "Cached Result" in profiling.
+
+**Commit: `Phase 7: Intelligence infrastructure and caching`**
 
 ---
 
@@ -177,7 +187,7 @@ Build a thesis-first venture intelligence platform (Next.js App Router + TypeScr
 - Setup instructions, feature list, deployment guide
 
 #### [NEW] [.env.example](file:///f:/SEM6/test-%20VC%20app/.env.example)
-- Template for environment variables
+- Template for environment variables (OPENAI_API_KEY, GOOGLE_GENERATIVE_AI_API_KEY)
 
 **Commit: `Phase 10: Production ready`**
 

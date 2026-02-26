@@ -1,12 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
-import OpenAI from "openai";
 import {
   validateUrl,
   fetchWebsite,
   extractTextFromHtml,
   detectDerivedSignals,
-  parseLlmResponse,
 } from "@/lib/enrichment";
+import {
+  callAIProvider,
+  isProviderAvailable,
+  getAvailableProviders,
+} from "@/lib/ai-provider";
+import type { AIProvider } from "@/types/enrichment";
 
 // ─── Rate Limiter (in-memory, per IP) ───
 const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
@@ -33,28 +37,9 @@ function checkRateLimit(ip: string): boolean {
 // ─── Server-side cache (in-memory, TTL 10 min) ───
 const enrichmentCache = new Map<
   string,
-  { data: Record<string, unknown>; cachedAt: number }
+  { data: Record<string, unknown>; cachedAt: number; provider: AIProvider }
 >();
 const CACHE_TTL_MS = 10 * 60 * 1000; // 10 minutes
-
-// ─── LLM Prompt ───
-const SYSTEM_PROMPT = `You are an intelligence extraction engine. Extract structured venture-relevant information from the provided website text. Return only valid JSON. No commentary. No markdown.`;
-
-function buildUserPrompt(cleanedText: string): string {
-  return `Website content:
-
-${cleanedText}
-
-Return strictly in this format:
-{
-  "summary": "1-2 sentence summary of the company",
-  "whatTheyDo": ["bullet1", "bullet2", "bullet3"],
-  "keywords": ["keyword1", "keyword2", "keyword3"],
-  "derivedSignals": ["signal1", "signal2"]
-}
-
-No commentary. No markdown. Only valid JSON.`;
-}
 
 // ─── POST /api/enrich ───
 export async function POST(request: NextRequest) {
@@ -75,7 +60,7 @@ export async function POST(request: NextRequest) {
     }
 
     // ── Parse request body ──
-    let body: { companyId?: string; url?: string };
+    let body: { companyId?: string; url?: string; provider?: AIProvider };
     try {
       body = await request.json();
     } catch {
@@ -85,7 +70,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { companyId, url } = body;
+    const { companyId, url, provider: requestedProvider } = body;
 
     // ── Validate companyId ──
     if (!companyId || typeof companyId !== "string") {
@@ -111,24 +96,47 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // ── Determine which AI provider to use ──
+    const availableProviders = getAvailableProviders();
+    let selectedProvider: AIProvider = requestedProvider || "openai";
+
+    // Validate requested provider is available
+    if (requestedProvider && !isProviderAvailable(requestedProvider)) {
+      // Fall back to any available provider
+      if (availableProviders.length > 0) {
+        selectedProvider = availableProviders[0];
+        console.log(`[Enrich] Requested provider '${requestedProvider}' not available, falling back to '${selectedProvider}'`);
+      }
+      // If no providers available, we'll use mock data below
+    }
+
     // ── Check server-side cache ──
-    const cacheKey = `${companyId}:${url}`;
+    const cacheKey = `${companyId}:${url}:${selectedProvider}`;
     const cached = enrichmentCache.get(cacheKey);
     if (cached && Date.now() - cached.cachedAt < CACHE_TTL_MS) {
-      console.log(`[Enrich] Cache hit for ${companyId}`);
-      return NextResponse.json({ success: true, data: cached.data });
+      console.log(`[Enrich] Cache hit for ${companyId} (${cached.provider})`);
+      return NextResponse.json({
+        success: true,
+        data: cached.data,
+        provider: cached.provider,
+        cached: true,
+      });
     }
 
-    // ── Check for API key ──
-    const apiKey = process.env.OPENAI_API_KEY;
-    if (!apiKey || apiKey === "your_openai_api_key_here") {
+    // ── Check if any API key is configured ──
+    if (availableProviders.length === 0) {
       // Fallback: return a mock enrichment response for demo purposes
-      console.log(`[Enrich] No API key configured, returning mock enrichment for ${companyId}`);
+      console.log(`[Enrich] No API keys configured, returning mock enrichment for ${companyId}`);
       const mockData = generateMockEnrichment(companyId, url);
-      return NextResponse.json({ success: true, data: mockData });
+      return NextResponse.json({
+        success: true,
+        data: mockData,
+        provider: "openai" as AIProvider,
+        cached: false,
+      });
     }
 
-    console.log(`[Enrich] Starting enrichment for ${companyId} — ${url}`);
+    console.log(`[Enrich] Starting enrichment for ${companyId} — ${url} (provider: ${selectedProvider})`);
 
     // ── Step 1: Fetch website ──
     let html: string;
@@ -170,41 +178,38 @@ export async function POST(request: NextRequest) {
     // ── Step 3: Detect derived signals from HTML ──
     const htmlDerivedSignals = detectDerivedSignals(html, url);
 
-    // ── Step 4: LLM extraction ──
-    const openai = new OpenAI({ apiKey });
+    // ── Step 4: LLM extraction via AI Provider Factory ──
+    let llmResult;
+    try {
+      llmResult = await callAIProvider(selectedProvider, cleanedText);
+    } catch (error) {
+      console.error(
+        `[Enrich] AI provider '${selectedProvider}' failed:`,
+        error instanceof Error ? error.message : error
+      );
 
-    let llmResult: ReturnType<typeof parseLlmResponse> = null;
-    let attempts = 0;
-    const maxAttempts = 2;
-
-    while (attempts < maxAttempts && !llmResult) {
-      attempts++;
-      try {
-        const completion = await openai.chat.completions.create({
-          model: "gpt-4o-mini",
-          messages: [
-            { role: "system", content: SYSTEM_PROMPT },
-            { role: "user", content: buildUserPrompt(cleanedText) },
-          ],
-          temperature: 0.3,
-          max_tokens: 1000,
-          response_format: { type: "json_object" },
-        });
-
-        const content = completion.choices[0]?.message?.content || "";
-        llmResult = parseLlmResponse(content);
-
-        if (!llmResult && attempts < maxAttempts) {
-          console.log(`[Enrich] LLM parse failed, retrying (attempt ${attempts})`);
-        }
-      } catch (error) {
-        console.error(`[Enrich] LLM error (attempt ${attempts}):`, error instanceof Error ? error.message : error);
-        if (attempts >= maxAttempts) {
+      // Try fallback to alternative provider
+      const fallbackProvider = availableProviders.find((p) => p !== selectedProvider);
+      if (fallbackProvider) {
+        console.log(`[Enrich] Falling back to '${fallbackProvider}'`);
+        try {
+          llmResult = await callAIProvider(fallbackProvider, cleanedText);
+          selectedProvider = fallbackProvider; // Update provider used
+        } catch (fallbackError) {
+          console.error(
+            `[Enrich] Fallback provider '${fallbackProvider}' also failed:`,
+            fallbackError instanceof Error ? fallbackError.message : fallbackError
+          );
           return NextResponse.json(
             { success: false, error: "AI extraction failed." },
             { status: 500 }
           );
         }
+      } else {
+        return NextResponse.json(
+          { success: false, error: "AI extraction failed." },
+          { status: 500 }
+        );
       }
     }
 
@@ -236,15 +241,25 @@ export async function POST(request: NextRequest) {
         },
       ],
       scrapedAt,
+      provider: selectedProvider,
     };
 
     // ── Cache the result ──
-    enrichmentCache.set(cacheKey, { data: enrichmentData, cachedAt: Date.now() });
+    enrichmentCache.set(cacheKey, {
+      data: enrichmentData,
+      cachedAt: Date.now(),
+      provider: selectedProvider,
+    });
 
     const duration = Date.now() - startTime;
-    console.log(`[Enrich] Completed for ${companyId} in ${duration}ms`);
+    console.log(`[Enrich] Completed for ${companyId} in ${duration}ms (provider: ${selectedProvider})`);
 
-    return NextResponse.json({ success: true, data: enrichmentData });
+    return NextResponse.json({
+      success: true,
+      data: enrichmentData,
+      provider: selectedProvider,
+      cached: false,
+    });
   } catch (error) {
     const duration = Date.now() - startTime;
     console.error(`[Enrich] Unexpected error after ${duration}ms:`, error instanceof Error ? error.message : error);
@@ -307,5 +322,6 @@ function generateMockEnrichment(companyId: string, url: string) {
       },
     ],
     scrapedAt,
+    provider: "openai" as AIProvider,
   };
 }
