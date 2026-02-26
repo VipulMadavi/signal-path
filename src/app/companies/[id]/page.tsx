@@ -17,7 +17,7 @@ import {
   Building2,
 } from "lucide-react";
 
-import { mockCompanies } from "@/lib/mock-companies";
+import { getScoredCompanies } from "@/lib/mock-companies";
 import { getCompanySignals } from "@/lib/mock-companies";
 import { getScoreBreakdown } from "@/lib/mock-score-breakdowns";
 
@@ -69,7 +69,7 @@ export default function CompanyProfilePage() {
 
   // Find company
   const company = useMemo(
-    () => mockCompanies.find((c) => c.id === companyId),
+    () => getScoredCompanies().find((c) => c.id === companyId),
     [companyId]
   );
 

@@ -1,4 +1,5 @@
 import { Company, Signal } from "@/types/company";
+import { computeScoreBreakdown } from "@/lib/scoring";
 
 export const mockCompanies: Company[] = [
   {
@@ -530,4 +531,36 @@ export function getCompanySignals(companyId: string): Signal[] {
   return mockSignals
     .filter((s) => s.companyId === companyId)
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+}
+
+// ─── Scoring Integration ───
+
+/** Cache for scored companies to avoid recomputation */
+let _scoredCompaniesCache: Company[] | null = null;
+
+/**
+ * Returns all companies with their `score` field replaced by the
+ * dynamically computed score from the scoring engine.
+ * Results are cached after first computation.
+ */
+export function getScoredCompanies(): Company[] {
+  if (_scoredCompaniesCache) return _scoredCompaniesCache;
+
+  _scoredCompaniesCache = mockCompanies.map((company) => {
+    const signals = getCompanySignals(company.id);
+    const breakdown = computeScoreBreakdown(company, signals);
+    return { ...company, score: breakdown.total };
+  });
+
+  return _scoredCompaniesCache;
+}
+
+/**
+ * Get the computed score for a single company.
+ */
+export function getComputedScore(companyId: string): number {
+  const company = mockCompanies.find((c) => c.id === companyId);
+  if (!company) return 0;
+  const signals = getCompanySignals(companyId);
+  return computeScoreBreakdown(company, signals).total;
 }

@@ -7,26 +7,31 @@ import type { ScoreBreakdown } from "@/types/company";
 const dimensionConfig: {
   key: keyof Omit<ScoreBreakdown, "total" | "explanation">;
   label: string;
+  weight: string;
   color: string;
 }[] = [
   {
     key: "signalStrength",
     label: "Signal Strength",
+    weight: "30%",
     color: "var(--scout-accent-teal)",
   },
   {
     key: "marketTiming",
     label: "Market Timing",
+    weight: "25%",
     color: "var(--scout-accent-blue)",
   },
   {
     key: "thesisFit",
     label: "Thesis Fit",
+    weight: "30%",
     color: "var(--scout-accent-purple)",
   },
   {
     key: "team",
     label: "Team",
+    weight: "15%",
     color: "var(--scout-warning)",
   },
 ];
@@ -81,13 +86,16 @@ export default function ScoreBreakdownPanel({
 
       {/* Dimension Bars */}
       <div className="space-y-3">
-        {dimensionConfig.map(({ key, label, color }) => {
+        {dimensionConfig.map(({ key, label, weight, color }) => {
           const value = breakdown[key];
           return (
             <div key={key} className="group">
               <div className="flex items-center justify-between mb-1.5">
                 <span className="text-xs font-medium text-[var(--scout-text-primary)]">
                   {label}
+                  <span className="ml-1 text-[10px] text-[var(--scout-text-muted)] font-normal">
+                    ({weight})
+                  </span>
                 </span>
                 <span
                   className="text-xs font-bold tabular-nums"

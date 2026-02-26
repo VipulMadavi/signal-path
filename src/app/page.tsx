@@ -5,14 +5,15 @@ import { ScoutButton } from "@/components/ui/ScoutButton";
 import { ScoutCard, ScoutCardHeader, ScoutCardTitle, ScoutCardContent } from "@/components/ui/ScoutCard";
 import { ScoutBadge, StageBadge } from "@/components/ui/ScoutBadge";
 import Link from "next/link";
-import { mockCompanies } from "@/lib/mock-companies";
+import { getScoredCompanies } from "@/lib/mock-companies";
 
 export default function Home() {
-  const totalCompanies = mockCompanies.length;
+  const scoredCompanies = getScoredCompanies();
+  const totalCompanies = scoredCompanies.length;
   const avgScore = Math.round(
-    mockCompanies.reduce((sum, c) => sum + c.score, 0) / totalCompanies
+    scoredCompanies.reduce((sum, c) => sum + c.score, 0) / totalCompanies
   );
-  const topCompany = mockCompanies.reduce((best, c) =>
+  const topCompany = scoredCompanies.reduce((best, c) =>
     c.score > best.score ? c : best
   );
 

@@ -63,12 +63,12 @@ Based on the 8 documentation files, following the implementation roadmap strictl
 - [x] Add re-run saved search functionality
 - [ ] Commit: "Phase 4: Lists and saved searches"
 
-## Phase 5 — Scoring Engine
-- [ ] Create `/lib/scoring.ts` with weighted formula
-- [ ] Generate explanation bullets
-- [ ] Attach scores to companies
-- [ ] Display breakdown in profile page
-- [ ] Display total score in companies table
+## Phase 5 — Scoring Engine ✅
+- [x] Create `/lib/scoring.ts` with weighted formula
+- [x] Generate explanation bullets
+- [x] Attach scores to companies
+- [x] Display breakdown in profile page
+- [x] Display total score in companies table
 - [ ] Commit: "Phase 5: Scoring engine"
 
 ## Phase 6 — Live Enrichment (Server-Side) ✅

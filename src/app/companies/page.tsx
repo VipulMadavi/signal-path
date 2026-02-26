@@ -8,7 +8,7 @@ import {
   Bookmark,
   SlidersHorizontal,
 } from "lucide-react";
-import { mockCompanies } from "@/lib/mock-companies";
+import { getScoredCompanies } from "@/lib/mock-companies";
 import { useCompanyStore } from "@/store/useCompanyStore";
 import CompaniesTable from "@/components/tables/CompaniesTable";
 import CompanyFilters from "@/components/search/CompanyFilters";
@@ -54,22 +54,24 @@ export default function CompaniesPage() {
   }, [loadSavedSearchesFromStorage]);
 
   // ─── Filter options from all companies ───
+  const scoredCompanies = useMemo(() => getScoredCompanies(), []);
+
   const stageOptions = useMemo(
-    () => getFilterOptions(mockCompanies, "stage"),
-    []
+    () => getFilterOptions(scoredCompanies, "stage"),
+    [scoredCompanies]
   );
   const sectorOptions = useMemo(
-    () => getFilterOptions(mockCompanies, "sector"),
-    []
+    () => getFilterOptions(scoredCompanies, "sector"),
+    [scoredCompanies]
   );
   const countryOptions = useMemo(
-    () => getFilterOptions(mockCompanies, "country"),
-    []
+    () => getFilterOptions(scoredCompanies, "country"),
+    [scoredCompanies]
   );
 
   // ─── Apply filters + search ───
   const filteredCompanies = useMemo(() => {
-    let result = [...mockCompanies];
+    let result = [...scoredCompanies];
 
     // Text search
     if (filters.query) {
@@ -132,7 +134,7 @@ export default function CompaniesPage() {
     });
 
     return result;
-  }, [filters]);
+  }, [filters, scoredCompanies]);
 
   // ─── Pagination ───
   const totalPages = Math.ceil(filteredCompanies.length / pageSize);

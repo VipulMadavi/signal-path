@@ -24,7 +24,7 @@ import {
 } from "@/components/ui/ScoutCard";
 import { ScoutBadge, StageBadge } from "@/components/ui/ScoutBadge";
 import { useListStore } from "@/store/useListStore";
-import { mockCompanies } from "@/lib/mock-companies";
+import { getScoredCompanies } from "@/lib/mock-companies";
 import type { Company, VCList } from "@/types/company";
 import Link from "next/link";
 
@@ -425,7 +425,7 @@ function ListDetailCard({
   const listCompanies = useMemo(
     () =>
       list.companyIds
-        .map((id) => mockCompanies.find((c) => c.id === id))
+        .map((id) => getScoredCompanies().find((c) => c.id === id))
         .filter((c): c is Company => c !== undefined),
     [list.companyIds]
   );
@@ -763,7 +763,7 @@ export default function ListsPage() {
                   ...new Set(lists.flatMap((l) => l.companyIds)),
                 ];
                 const allCompanies = allCompanyIds
-                  .map((id) => mockCompanies.find((c) => c.id === id))
+                  .map((id) => getScoredCompanies().find((c) => c.id === id))
                   .filter((c): c is Company => c !== undefined);
                 const allList: VCList = {
                   id: "all",
