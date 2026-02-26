@@ -10,11 +10,16 @@ const LS_SETTINGS_KEY = "signalpath_settings";
 interface AppSettings {
   defaultProvider: AIProvider;
   enableCaching: boolean;
+  // User-provided API keys (GUI-based injection)
+  userOpenAIKey: string;
+  userGeminiKey: string;
 }
 
 const DEFAULT_SETTINGS: AppSettings = {
   defaultProvider: "openai",
   enableCaching: true,
+  userOpenAIKey: "",
+  userGeminiKey: "",
 };
 
 // ─── Load settings from localStorage ───
@@ -53,10 +58,21 @@ interface SettingsStoreState {
   setDefaultProvider: (provider: AIProvider) => void;
   toggleCaching: () => void;
 
+  // API Key management
+  setUserOpenAIKey: (key: string) => void;
+  setUserGeminiKey: (key: string) => void;
+  clearUserKeys: () => void;
+  hasAnyUserKey: () => boolean;
+
   // Model switcher UI state
   isModelSwitcherOpen: boolean;
   toggleModelSwitcher: () => void;
   closeModelSwitcher: () => void;
+
+  // Settings modal UI state
+  isSettingsModalOpen: boolean;
+  openSettingsModal: () => void;
+  closeSettingsModal: () => void;
 }
 
 export const useSettingsStore = create<SettingsStoreState>((set, get) => ({
@@ -80,9 +96,41 @@ export const useSettingsStore = create<SettingsStoreState>((set, get) => ({
     set({ settings: updated });
   },
 
+  // ─── API Key Management ───
+  setUserOpenAIKey: (key: string) => {
+    const { settings } = get();
+    const updated = { ...settings, userOpenAIKey: key.trim() };
+    persistSettings(updated);
+    set({ settings: updated });
+  },
+
+  setUserGeminiKey: (key: string) => {
+    const { settings } = get();
+    const updated = { ...settings, userGeminiKey: key.trim() };
+    persistSettings(updated);
+    set({ settings: updated });
+  },
+
+  clearUserKeys: () => {
+    const { settings } = get();
+    const updated = { ...settings, userOpenAIKey: "", userGeminiKey: "" };
+    persistSettings(updated);
+    set({ settings: updated });
+  },
+
+  hasAnyUserKey: () => {
+    const { settings } = get();
+    return Boolean(settings.userOpenAIKey || settings.userGeminiKey);
+  },
+
   // Model switcher dropdown state
   isModelSwitcherOpen: false,
   toggleModelSwitcher: () =>
     set((state) => ({ isModelSwitcherOpen: !state.isModelSwitcherOpen })),
   closeModelSwitcher: () => set({ isModelSwitcherOpen: false }),
+
+  // Settings modal state
+  isSettingsModalOpen: false,
+  openSettingsModal: () => set({ isSettingsModalOpen: true }),
+  closeSettingsModal: () => set({ isSettingsModalOpen: false }),
 }));

@@ -60,7 +60,7 @@ export async function POST(request: NextRequest) {
     }
 
     // ── Parse request body ──
-    let body: { companyId?: string; url?: string; provider?: AIProvider };
+    let body: { companyId?: string; url?: string; provider?: AIProvider; userOpenAIKey?: string; userGeminiKey?: string };
     try {
       body = await request.json();
     } catch {
@@ -70,7 +70,12 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { companyId, url, provider: requestedProvider } = body;
+    const { companyId, url, provider: requestedProvider, userOpenAIKey, userGeminiKey } = body;
+
+    // Build key overrides from user-provided keys
+    const keyOverrides: { openaiKey?: string; geminiKey?: string } = {};
+    if (userOpenAIKey) keyOverrides.openaiKey = userOpenAIKey;
+    if (userGeminiKey) keyOverrides.geminiKey = userGeminiKey;
 
     // ── Validate companyId ──
     if (!companyId || typeof companyId !== "string") {
@@ -97,17 +102,21 @@ export async function POST(request: NextRequest) {
     }
 
     // ── Determine which AI provider to use ──
-    const availableProviders = getAvailableProviders();
+    // Consider both server-side env vars AND user-provided keys
+    const serverProviders = getAvailableProviders();
+    const userProviders: AIProvider[] = [];
+    if (userOpenAIKey) userProviders.push("openai");
+    if (userGeminiKey) userProviders.push("gemini");
+    const allAvailableProviders = [...new Set([...serverProviders, ...userProviders])] as AIProvider[];
+
     let selectedProvider: AIProvider = requestedProvider || "openai";
 
-    // Validate requested provider is available
-    if (requestedProvider && !isProviderAvailable(requestedProvider)) {
-      // Fall back to any available provider
-      if (availableProviders.length > 0) {
-        selectedProvider = availableProviders[0];
+    // Validate requested provider is available (via either server or user keys)
+    if (requestedProvider && !allAvailableProviders.includes(requestedProvider)) {
+      if (allAvailableProviders.length > 0) {
+        selectedProvider = allAvailableProviders[0];
         console.log(`[Enrich] Requested provider '${requestedProvider}' not available, falling back to '${selectedProvider}'`);
       }
-      // If no providers available, we'll use mock data below
     }
 
     // ── Check server-side cache ──
@@ -123,16 +132,17 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    // ── Check if any API key is configured ──
-    if (availableProviders.length === 0) {
+    // ── Check if any API key is configured (server or user) ──
+    if (allAvailableProviders.length === 0) {
       // Fallback: return a mock enrichment response for demo purposes
-      console.log(`[Enrich] No API keys configured, returning mock enrichment for ${companyId}`);
+      console.log(`[Enrich] No API keys configured (server or user), returning mock enrichment for ${companyId}`);
       const mockData = generateMockEnrichment(companyId, url);
       return NextResponse.json({
         success: true,
         data: mockData,
         provider: "openai" as AIProvider,
         cached: false,
+        demo: true,
       });
     }
 
@@ -181,7 +191,7 @@ export async function POST(request: NextRequest) {
     // ── Step 4: LLM extraction via AI Provider Factory ──
     let llmResult;
     try {
-      llmResult = await callAIProvider(selectedProvider, cleanedText);
+      llmResult = await callAIProvider(selectedProvider, cleanedText, keyOverrides);
     } catch (error) {
       console.error(
         `[Enrich] AI provider '${selectedProvider}' failed:`,
@@ -189,11 +199,11 @@ export async function POST(request: NextRequest) {
       );
 
       // Try fallback to alternative provider
-      const fallbackProvider = availableProviders.find((p) => p !== selectedProvider);
+      const fallbackProvider = allAvailableProviders.find((p) => p !== selectedProvider);
       if (fallbackProvider) {
         console.log(`[Enrich] Falling back to '${fallbackProvider}'`);
         try {
-          llmResult = await callAIProvider(fallbackProvider, cleanedText);
+          llmResult = await callAIProvider(fallbackProvider, cleanedText, keyOverrides);
           selectedProvider = fallbackProvider; // Update provider used
         } catch (fallbackError) {
           console.error(

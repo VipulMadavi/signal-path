@@ -17,6 +17,8 @@ import {
   Lightbulb,
   Bot,
   Database,
+  Settings,
+  FlaskConical,
 } from "lucide-react";
 import { ScoutButton } from "@/components/ui/ScoutButton";
 import { ScoutBadge } from "@/components/ui/ScoutBadge";
@@ -131,14 +133,19 @@ export default function EnrichmentPanel({
       }
 
       try {
+        // Include user-provided keys if available
+        const requestBody: Record<string, string | undefined> = {
+          companyId,
+          url: websiteUrl,
+          provider: activeProvider,
+        };
+        if (settings.userOpenAIKey) requestBody.userOpenAIKey = settings.userOpenAIKey;
+        if (settings.userGeminiKey) requestBody.userGeminiKey = settings.userGeminiKey;
+
         const response = await fetch("/api/enrich", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            companyId,
-            url: websiteUrl,
-            provider: activeProvider,
-          }),
+          body: JSON.stringify(requestBody),
         });
 
         const data = await response.json();
@@ -169,7 +176,7 @@ export default function EnrichmentPanel({
         setState("error");
       }
     },
-    [companyId, websiteUrl, activeProvider]
+    [companyId, websiteUrl, activeProvider, settings.userOpenAIKey, settings.userGeminiKey]
   );
 
   // Format timestamp
@@ -185,6 +192,10 @@ export default function EnrichmentPanel({
   };
 
   const providerInfo = PROVIDER_INFO[usedProvider] || PROVIDER_INFO.openai;
+  const { openSettingsModal } = useSettingsStore();
+
+  // Determine if we are in demo mode (no keys at all)
+  const isInDemoMode = !settings.userOpenAIKey && !settings.userGeminiKey;
 
   return (
     <div className="space-y-0">
@@ -249,6 +260,21 @@ export default function EnrichmentPanel({
             </p>
           </div>
 
+          {/* Demo Mode Notice */}
+          {isInDemoMode && (
+          <div className="flex items-start gap-2 p-3 rounded-lg bg-amber-500/5 border border-amber-500/15">
+            <FlaskConical size={14} className="text-amber-400 shrink-0 mt-0.5" />
+            <div>
+              <p className="text-xs font-medium text-amber-400">Demo Mode</p>
+              <p className="text-[10px] text-[var(--scout-text-muted)] mt-0.5">
+                No API keys configured. Results will use mock data.
+                <button onClick={openSettingsModal} className="ml-1 text-[var(--scout-accent-teal)] hover:underline inline-flex items-center gap-0.5">
+                  <Settings size={9} /> Add keys
+                </button>
+              </p>
+            </div>
+          </div>
+          )}
           <div className="flex items-center gap-2 text-xs text-[var(--scout-text-muted)]">
             <Globe size={12} />
             <span className="truncate">{websiteUrl}</span>

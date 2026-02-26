@@ -2,8 +2,15 @@
 // Multi-LLM support: OpenAI + Gemini
 // This module provides a unified interface for calling different LLM providers
 // Used exclusively on the server side (API routes)
+// Supports both server-side env var keys AND user-provided (GUI-injected) keys
 
 import type { AIProvider, LLMExtractionResult } from "@/types/enrichment";
+
+// ─── Key override type ───
+export interface KeyOverrides {
+  openaiKey?: string;
+  geminiKey?: string;
+}
 
 // ─── LLM Prompt (shared across providers) ───
 const SYSTEM_PROMPT = `You are an intelligence extraction engine. Extract structured venture-relevant information from the provided website text. Return only valid JSON. No commentary. No markdown.`;
@@ -61,8 +68,13 @@ function parseLLMJSON(response: string): LLMExtractionResult | null {
 }
 
 // ─── OpenAI Provider ───
-async function callOpenAI(cleanedText: string): Promise<LLMExtractionResult | null> {
-  const apiKey = process.env.OPENAI_API_KEY;
+// Accepts an optional overrideKey from the user's GUI input
+async function callOpenAI(
+  cleanedText: string,
+  overrideKey?: string
+): Promise<LLMExtractionResult | null> {
+  // Priority: user-provided key > server env var
+  const apiKey = overrideKey || process.env.OPENAI_API_KEY;
   if (!apiKey || apiKey === "your_openai_api_key_here") {
     return null;
   }
@@ -110,8 +122,13 @@ async function callOpenAI(cleanedText: string): Promise<LLMExtractionResult | nu
 }
 
 // ─── Gemini Provider ───
-async function callGemini(cleanedText: string): Promise<LLMExtractionResult | null> {
-  const apiKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY;
+// Accepts an optional overrideKey from the user's GUI input
+async function callGemini(
+  cleanedText: string,
+  overrideKey?: string
+): Promise<LLMExtractionResult | null> {
+  // Priority: user-provided key > server env var
+  const apiKey = overrideKey || process.env.GOOGLE_GENERATIVE_AI_API_KEY;
   if (!apiKey || apiKey === "your_gemini_api_key_here") {
     return null;
   }
@@ -152,22 +169,24 @@ async function callGemini(cleanedText: string): Promise<LLMExtractionResult | nu
 }
 
 // ─── Provider Factory ───
+// Now accepts optional key overrides for user-provided keys
 export async function callAIProvider(
   provider: AIProvider,
-  cleanedText: string
+  cleanedText: string,
+  keyOverrides?: KeyOverrides
 ): Promise<LLMExtractionResult | null> {
-  console.log(`[AI Factory] Using provider: ${provider}`);
+  console.log(`[AI Factory] Using provider: ${provider}${keyOverrides?.openaiKey || keyOverrides?.geminiKey ? ' (with user key)' : ''}`);
 
   switch (provider) {
     case "gemini":
-      return callGemini(cleanedText);
+      return callGemini(cleanedText, keyOverrides?.geminiKey);
     case "openai":
     default:
-      return callOpenAI(cleanedText);
+      return callOpenAI(cleanedText, keyOverrides?.openaiKey);
   }
 }
 
-// ─── Check if a provider is available ───
+// ─── Check if a provider is available (server env vars only) ───
 export function isProviderAvailable(provider: AIProvider): boolean {
   switch (provider) {
     case "openai": {
@@ -183,7 +202,7 @@ export function isProviderAvailable(provider: AIProvider): boolean {
   }
 }
 
-// ─── Get available providers ───
+// ─── Get available providers (server env vars only) ───
 export function getAvailableProviders(): AIProvider[] {
   const providers: AIProvider[] = [];
   if (isProviderAvailable("openai")) providers.push("openai");
