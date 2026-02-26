@@ -1,5 +1,21 @@
 # ScoutVC — Full Build Task List
 
+## ⚠️ AI Agent: Follow This Priority Order
+
+These phases must be completed in the following order. Do NOT skip ahead or work out of sequence.
+
+1. 🔴 **Phase 6 — Live Enrichment** ← Build this FIRST. This is the core engineering test of the assignment. Requires `/api/enrich` server route, URL validation, SSRF protection, HTML fetch, LLM structured extraction, and enrichment UI panel on the company profile page (idle / loading / success / error states, sources listed with timestamp, keywords, derived signals).
+
+2. 🟠 **Phase 4 — Lists & Saved Searches** ← Build this SECOND. Both `/lists` and `/saved` pages are required deliverables. Must include create list, add/remove companies, CSV export, JSON export, re-run saved search, and delete saved search.
+
+3. 🟡 **Phase 10 — Production Deployment** ← Build this THIRD. Push to GitHub, deploy to Vercel, add env vars in Vercel dashboard, write README with setup instructions and env var documentation.
+
+4. 🟢 **Phase 5 — Scoring Engine** ← Build this FOURTH. Replace mock score data with real `/lib/scoring.ts` logic using weighted formula. Mock data currently covers scores in the UI so this is lower urgency.
+
+5. 🟢 **Phase 8 & 9 — Polish & Hardening** ← Build this LAST. Skeleton loaders, hover animations, toast notifications, mobile responsiveness check, Lighthouse ≥ 85, no API key exposure.
+
+---
+
 Based on the 8 documentation files, following the implementation roadmap strictly.
 
 ## Phase 0 — Project Setup ✅
@@ -28,13 +44,13 @@ Based on the 8 documentation files, following the implementation roadmap strictl
 - [x] Persist saved searches in localStorage
 - [ ] Commit: "Phase 2: Companies discovery system"
 
-## Phase 3 — Company Profile System
-- [ ] Create dynamic route `/companies/[id]`
-- [ ] Build profile header (name, stage badge, score, website link)
-- [ ] Implement signal timeline component
-- [ ] Create score breakdown visualization
-- [ ] Add notes panel (persist in localStorage)
-- [ ] Add save-to-list button
+## Phase 3 — Company Profile System ✅
+- [x] Create dynamic route `/companies/[id]`
+- [x] Build profile header (name, stage badge, score, website link)
+- [x] Implement signal timeline component
+- [x] Create score breakdown visualization
+- [x] Add notes panel (persist in localStorage)
+- [x] Add save-to-list button
 - [ ] Commit: "Phase 3: Company profile system"
 
 ## Phase 4 — Lists & Saved Searches
