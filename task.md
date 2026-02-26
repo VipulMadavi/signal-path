@@ -53,14 +53,14 @@ Based on the 8 documentation files, following the implementation roadmap strictl
 - [x] Add save-to-list button
 - [ ] Commit: "Phase 3: Company profile system"
 
-## Phase 4 — Lists & Saved Searches
-- [ ] Create `/lists` page
-- [ ] Implement create list modal
-- [ ] Add/remove companies from lists
-- [ ] Implement CSV export
-- [ ] Implement JSON export
-- [ ] Create `/saved` page with saved searches display
-- [ ] Add re-run saved search functionality
+## Phase 4 — Lists & Saved Searches ✅
+- [x] Create `/lists` page
+- [x] Implement create list modal
+- [x] Add/remove companies from lists
+- [x] Implement CSV export
+- [x] Implement JSON export
+- [x] Create `/saved` page with saved searches display
+- [x] Add re-run saved search functionality
 - [ ] Commit: "Phase 4: Lists and saved searches"
 
 ## Phase 5 — Scoring Engine
