@@ -1,6 +1,6 @@
 "use client";
 
-import { Search, Bell, User, ChevronDown, Settings, Menu } from "lucide-react";
+import { Search, Bell, User, ChevronDown, Settings, Menu, FlaskConical } from "lucide-react";
 import { useState, useEffect } from "react";
 import ModelSwitcher from "@/components/layout/ModelSwitcher";
 import SettingsModal from "@/components/layout/SettingsModal";
@@ -9,13 +9,39 @@ import { useSettingsStore } from "@/store/useSettingsStore";
 export default function TopBar() {
   const [searchQuery, setSearchQuery] = useState("");
   const [searchFocused, setSearchFocused] = useState(false);
-  const { settings, loadSettingsFromStorage, openSettingsModal } = useSettingsStore();
+  const {
+    settings,
+    loadSettingsFromStorage,
+    openSettingsModal,
+    envKeyStatus,
+    fetchEnvKeyStatus,
+  } = useSettingsStore();
 
   useEffect(() => {
     loadSettingsFromStorage();
-  }, [loadSettingsFromStorage]);
+    fetchEnvKeyStatus();
+  }, [loadSettingsFromStorage, fetchEnvKeyStatus]);
 
-  const hasUserKeys = Boolean(settings.userOpenAIKey || settings.userGeminiKey);
+  // #7: Cmd/Ctrl + , opens settings
+  useEffect(() => {
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.key === "," && (e.metaKey || e.ctrlKey)) {
+        e.preventDefault();
+        openSettingsModal();
+      }
+    }
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [openSettingsModal]);
+
+  // #1 + #2: Determine button state
+  const hasAnyActiveKey =
+    Boolean(settings.userOpenAIKey || settings.userGeminiKey) ||
+    envKeyStatus.openai ||
+    envKeyStatus.gemini;
+  const isDemoForced = settings.forceDemoMode;
+  // Teal = keys active and NOT in forced demo mode
+  const showTeal = hasAnyActiveKey && !isDemoForced;
 
   return (
     <>
@@ -89,21 +115,47 @@ export default function TopBar() {
             <ModelSwitcher />
           </div>
 
-          {/* Settings / API Key Config */}
+          {/* #2: Demo Mode pill — shown when demo is forced */}
+          {isDemoForced && (
+            <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-lg border text-[10px] font-medium transition-all duration-200"
+              style={{
+                borderColor: "color-mix(in srgb, var(--scout-warning) 30%, transparent)",
+                background: "color-mix(in srgb, var(--scout-warning) 8%, transparent)",
+                color: "var(--scout-warning)",
+              }}
+            >
+              <FlaskConical size={12} />
+              Demo
+            </div>
+          )}
+
+          {/* #1: Settings button — teal when keys active, amber when demo forced */}
           <button
             id="settings-btn"
             onClick={openSettingsModal}
             className={`relative p-2 rounded-lg transition-scout ${
-              hasUserKeys
-                ? "text-[var(--scout-accent-teal)] hover:bg-[var(--scout-accent-teal)]/10"
-                : "text-[var(--scout-text-muted)] hover:text-[var(--scout-text-primary)] hover:bg-white/[0.04]"
+              isDemoForced
+                ? "hover:bg-amber-500/10"
+                : showTeal
+                  ? "text-[var(--scout-accent-teal)] hover:bg-[var(--scout-accent-teal)]/10"
+                  : "text-[var(--scout-text-muted)] hover:text-[var(--scout-text-primary)] hover:bg-white/[0.04]"
             }`}
+            style={isDemoForced ? { color: "var(--scout-warning)" } : {}}
             aria-label="API Settings"
-            title="API Configuration"
+            title={isDemoForced ? "Demo Mode active — click to configure (Ctrl+,)" : "API Configuration (Ctrl+,)"}
           >
-            <Settings size={18} />
-            {hasUserKeys && (
+            {isDemoForced ? <FlaskConical size={18} /> : <Settings size={18} />}
+
+            {/* #1: Green dot when live keys active */}
+            {showTeal && (
               <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-[var(--scout-success)]" />
+            )}
+            {/* #2: Amber pulsing dot when demo mode forced */}
+            {isDemoForced && (
+              <span
+                className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full animate-pulse"
+                style={{ backgroundColor: "var(--scout-warning)" }}
+              />
             )}
           </button>
 

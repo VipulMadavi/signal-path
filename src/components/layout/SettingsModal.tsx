@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import { ScoutButton } from "@/components/ui/ScoutButton";
+import { toast } from "sonner";
 
 // ─── Key validation helpers ───
 function isValidOpenAIKey(key: string): boolean {
@@ -110,6 +111,17 @@ export default function SettingsModal() {
     setTimeout(() => setSaved(false), 2000);
   }, [openaiKey, geminiKey, setUserOpenAIKey, setUserGeminiKey]);
 
+  // #9: Toggle demo mode with a toast notification
+  const handleToggleDemoMode = useCallback(() => {
+    toggleDemoMode();
+    const willBeDemoMode = !settings.forceDemoMode;
+    if (willBeDemoMode) {
+      toast.info("Demo Mode enabled — mock data will be used.", { icon: "🧪" });
+    } else {
+      toast.success("AI Mode enabled — live enrichment active.", { icon: "✨" });
+    }
+  }, [toggleDemoMode, settings.forceDemoMode]);
+
   const handleClearAll = useCallback(() => {
     setOpenaiKey("");
     setGeminiKey("");
@@ -194,7 +206,7 @@ export default function SettingsModal() {
           >
             {/* Demo Mode Button */}
             <button
-              onClick={() => { if (!isDemoMode) toggleDemoMode(); }}
+              onClick={() => { if (!isDemoMode) handleToggleDemoMode(); }}
               className="flex-1 flex items-center justify-center gap-2 py-2.5 px-4 text-xs font-medium transition-all duration-300 rounded-l-xl"
               style={{
                 background: isDemoMode ? "color-mix(in srgb, var(--scout-warning) 15%, transparent)" : "transparent",
@@ -207,7 +219,7 @@ export default function SettingsModal() {
 
             {/* AI Mode Button */}
             <button
-              onClick={() => { if (isDemoMode) toggleDemoMode(); }}
+              onClick={() => { if (isDemoMode) handleToggleDemoMode(); }}
               className="flex-1 flex items-center justify-center gap-2 py-2.5 px-4 text-xs font-medium transition-all duration-300 rounded-r-xl"
               style={{
                 background: !isDemoMode ? "color-mix(in srgb, var(--scout-accent-teal) 15%, transparent)" : "transparent",
@@ -241,8 +253,8 @@ export default function SettingsModal() {
           </div>
         </div>
 
-        {/* Body */}
-        <div className={`px-6 py-4 space-y-5 max-h-[50vh] overflow-y-auto transition-opacity duration-300 ${isDemoMode ? "opacity-50 pointer-events-none" : ""}`}>
+        {/* Body — #6: always interactive, even in Demo Mode (keys saved for when user switches back to AI mode) */}
+        <div className={`px-6 py-4 space-y-5 max-h-[50vh] overflow-y-auto transition-opacity duration-300 ${isDemoMode ? "opacity-60" : ""}`}>
           {/* OpenAI Key */}
           <div className="space-y-2">
             <div className="flex items-center gap-2">
@@ -422,7 +434,7 @@ export default function SettingsModal() {
         {/* Footer */}
         <div className="flex items-center justify-between px-6 py-4 border-t border-[var(--scout-border)]">
           <div className="flex items-center gap-2">
-            {hasKeys && !isDemoMode && (
+            {hasKeys && (
               <button
                 onClick={handleClearAll}
                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs text-[var(--scout-error)] hover:bg-[var(--scout-error)]/5 transition-colors"
@@ -436,17 +448,16 @@ export default function SettingsModal() {
             {saved && (
               <span className="flex items-center gap-1 text-[10px] text-[var(--scout-success)] fade-in">
                 <CheckCircle2 size={10} />
-                Saved!
+                {isDemoMode ? "Keys saved (active in AI mode)" : "Saved!"}
               </span>
             )}
             <ScoutButton variant="secondary" size="sm" onClick={closeSettingsModal}>
               Cancel
             </ScoutButton>
-            {!isDemoMode && (
-              <ScoutButton variant="primary" size="sm" onClick={handleSave}>
-                Save Keys
-              </ScoutButton>
-            )}
+            {/* #6: Save Keys always visible — saved keys apply when switching to AI mode */}
+            <ScoutButton variant="primary" size="sm" onClick={handleSave}>
+              {isDemoMode ? "Save Keys (for AI mode)" : "Save Keys"}
+            </ScoutButton>
           </div>
         </div>
       </div>

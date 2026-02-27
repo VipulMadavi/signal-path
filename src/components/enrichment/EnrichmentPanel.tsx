@@ -91,6 +91,8 @@ export default function EnrichmentPanel({
   const [cachedAt, setCachedAt] = useState<string | null>(null);
   const [localProviderOverride, setLocalProviderOverride] = useState<AIProvider | null>(null);
   const [showProviderPicker, setShowProviderPicker] = useState(false);
+  // #5: Track whether the last result was mock/demo data
+  const [isDemoResult, setIsDemoResult] = useState(false);
 
   // Get global default provider
   const { settings, loadSettingsFromStorage, fetchEnvKeyStatus, isEffectivelyDemoMode } = useSettingsStore();
@@ -174,10 +176,11 @@ export default function EnrichmentPanel({
         setEnrichment(enrichmentData);
         setUsedProvider(provider);
         setIsCachedResult(data.cached || false);
+        setIsDemoResult(data.demo === true);
         setCachedAt(data.cached ? new Date().toISOString() : null);
         setCachedEnrichment(companyId, enrichmentData, provider);
         setState("success");
-        toast.success('Enrichment complete!');
+        toast.success(data.demo ? 'Enrichment complete (demo data).' : 'Enrichment complete!');
       } catch {
         setError("Network error. Please check your connection and try again.");
         setState("error");
@@ -204,6 +207,8 @@ export default function EnrichmentPanel({
 
   // Determine if we are in demo mode (force demo or no keys at all)
   const isInDemoMode = isEffectivelyDemoMode();
+  // #4: Distinguish between forced demo vs no-keys auto-demo
+  const isForcedDemo = settings.forceDemoMode;
 
   return (
     <div className="space-y-0">
@@ -231,19 +236,36 @@ export default function EnrichmentPanel({
                   Cached
                 </span>
               )}
-              <span
-                className="flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[10px]"
-                style={{
-                  background: `color-mix(in srgb, ${providerInfo.color} 8%, transparent)`,
-                  borderColor: `color-mix(in srgb, ${providerInfo.color} 15%, transparent)`,
-                  color: providerInfo.color,
-                  borderWidth: "1px",
-                  borderStyle: "solid",
-                }}
-              >
-                <Bot size={9} />
-                {providerInfo.name}
-              </span>
+              {/* #5: Show amber Demo badge when mock data, else show provider */}
+              {isDemoResult ? (
+                <span
+                  className="flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[10px]"
+                  style={{
+                    background: "color-mix(in srgb, var(--scout-warning) 10%, transparent)",
+                    borderColor: "color-mix(in srgb, var(--scout-warning) 20%, transparent)",
+                    color: "var(--scout-warning)",
+                    borderWidth: "1px",
+                    borderStyle: "solid",
+                  }}
+                >
+                  <FlaskConical size={9} />
+                  Demo
+                </span>
+              ) : (
+                <span
+                  className="flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[10px]"
+                  style={{
+                    background: `color-mix(in srgb, ${providerInfo.color} 8%, transparent)`,
+                    borderColor: `color-mix(in srgb, ${providerInfo.color} 15%, transparent)`,
+                    color: providerInfo.color,
+                    borderWidth: "1px",
+                    borderStyle: "solid",
+                  }}
+                >
+                  <Bot size={9} />
+                  {providerInfo.name}
+                </span>
+              )}
             </div>
           )}
           {state === "success" && (
@@ -268,16 +290,19 @@ export default function EnrichmentPanel({
             </p>
           </div>
 
-          {/* Demo Mode Notice */}
+          {/* #4: Demo Mode Notice — context-aware message */}
           {isInDemoMode && (
           <div className="flex items-start gap-2 p-3 rounded-lg bg-amber-500/5 border border-amber-500/15">
             <FlaskConical size={14} className="text-amber-400 shrink-0 mt-0.5" />
             <div>
               <p className="text-xs font-medium text-amber-400">Demo Mode</p>
               <p className="text-[10px] text-[var(--scout-text-muted)] mt-0.5">
-                No API keys configured. Results will use mock data.
+                {isForcedDemo
+                  ? "Demo mode is forced on. Mock data will be used even though API keys may be configured."
+                  : "No API keys detected. Results will use mock data."}
                 <button onClick={openSettingsModal} className="ml-1 text-[var(--scout-accent-teal)] hover:underline inline-flex items-center gap-0.5">
-                  <Settings size={9} /> Add keys
+                  <Settings size={9} />
+                  {isForcedDemo ? "Switch to AI mode" : "Add keys"}
                 </button>
               </p>
             </div>
