@@ -4,6 +4,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import type { CompanyNote } from "@/types/company";
 import { StickyNote, Plus, Trash2, Pencil, Check, X } from "lucide-react";
 import { ScoutButton } from "@/components/ui/ScoutButton";
+import { toast } from "sonner";
 
 const LS_NOTES_KEY = "signalpath_notes";
 
@@ -66,6 +67,7 @@ export default function CompanyNotesPanel({ companyId }: NotesProps) {
     setNotes(updated.filter((n) => n.companyId === companyId));
     setNewContent("");
     setIsAdding(false);
+    toast.success('Note saved!');
   }, [newContent, companyId]);
 
   // ─── Delete a note ───

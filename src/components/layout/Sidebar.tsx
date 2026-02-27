@@ -13,6 +13,7 @@ import {
   Zap,
 } from "lucide-react";
 import { useState } from "react";
+import { useKeyboardShortcuts } from "@/lib/useKeyboardShortcuts";
 
 interface NavItem {
   label: string;
@@ -49,6 +50,7 @@ const secondaryNav: NavItem[] = [
 export default function Sidebar() {
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(false);
+  useKeyboardShortcuts();
 
   const isActive = (href: string) => {
     if (href === "/") return pathname === "/";

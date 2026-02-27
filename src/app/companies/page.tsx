@@ -165,7 +165,7 @@ export default function CompaniesPage() {
     (filters.country?.length || 0);
 
   return (
-    <div className="space-y-6 fade-in">
+    <div className="space-y-6 fade-in animate-fadeInUp">
       {/* Page Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">

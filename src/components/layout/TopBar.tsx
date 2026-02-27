@@ -24,7 +24,7 @@ export default function TopBar() {
         className="sticky top-0 z-30 flex items-center justify-between h-16 px-6 bg-[var(--scout-bg-secondary)]/80 backdrop-blur-xl border-b border-[var(--scout-border)]"
       >
         {/* Global Search */}
-        <div className="flex-1 max-w-xl">
+        <div className="flex-1 max-w-xl min-w-0">
           <div
             className={`
               flex items-center gap-2 px-3 py-2 rounded-lg
@@ -52,10 +52,11 @@ export default function TopBar() {
               onChange={(e) => setSearchQuery(e.target.value)}
               onFocus={() => setSearchFocused(true)}
               onBlur={() => setSearchFocused(false)}
-              className="flex-1 bg-transparent text-sm text-[var(--scout-text-primary)] placeholder:text-[var(--scout-text-muted)] outline-none"
+              className="flex-1 min-w-0 bg-transparent text-sm text-[var(--scout-text-primary)] placeholder:text-[var(--scout-text-muted)] outline-none"
+              data-search-input
             />
-            <kbd className="hidden sm:flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] text-[var(--scout-text-muted)] bg-white/[0.06] border border-[var(--scout-border)]">
-              ⌘K
+            <kbd className="hidden sm:inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-mono bg-white/10 text-white/40 border border-white/10">
+              /
             </kbd>
           </div>
         </div>
@@ -73,7 +74,9 @@ export default function TopBar() {
           </button>
 
           {/* AI Model Switcher */}
-          <ModelSwitcher />
+          <div className="hidden sm:flex">
+            <ModelSwitcher />
+          </div>
 
           {/* Settings / API Key Config */}
           <button

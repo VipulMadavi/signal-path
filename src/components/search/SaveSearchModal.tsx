@@ -3,6 +3,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Bookmark, X } from "lucide-react";
 import { ScoutButton } from "@/components/ui/ScoutButton";
+import { toast } from "sonner";
 
 interface SaveSearchModalProps {
   isOpen: boolean;
@@ -32,6 +33,7 @@ export default function SaveSearchModal({
     e.preventDefault();
     if (name.trim()) {
       onSave(name.trim());
+      toast.success('Search saved!');
       setName("");
     }
   };

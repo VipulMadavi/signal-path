@@ -179,7 +179,7 @@ export default function CompaniesTable({
             {companies.map((company, idx) => (
               <tr
                 key={company.id}
-                className="border-b border-[var(--scout-border)] hover:bg-white/[0.02] transition-colors duration-150 group"
+                className="border-b border-[var(--scout-border)] hover:bg-white/[0.02] transition-colors duration-150 group row-hover"
                 style={{
                   animationDelay: `${idx * 30}ms`,
                 }}

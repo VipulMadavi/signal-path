@@ -21,6 +21,7 @@ import { ScoutBadge } from "@/components/ui/ScoutBadge";
 import { useCompanyStore } from "@/store/useCompanyStore";
 import type { SavedSearch } from "@/types/company";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 // ─── Format helpers ───
 function formatDate(iso: string): string {
@@ -194,7 +195,7 @@ function SavedSearchCard({
   return (
     <ScoutCard
       interactive
-      className="group relative overflow-hidden"
+      className="group relative overflow-hidden card-hover"
     >
       {/* Subtle top border accent */}
       <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-[var(--scout-accent-blue)]/40 via-[var(--scout-accent-teal)]/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
@@ -299,18 +300,20 @@ export default function SavedPage() {
 
   const handleRerun = (search: SavedSearch) => {
     applySavedSearch(search);
+    toast.info('Search re-run!');
     router.push("/companies");
   };
 
   const handleDelete = () => {
     if (deletingSearch) {
       deleteSavedSearch(deletingSearch.id);
+      toast.success('Saved search deleted');
       setDeletingSearch(null);
     }
   };
 
   return (
-    <div className="space-y-6 fade-in">
+    <div className="space-y-6 fade-in animate-fadeInUp">
       {/* Page Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">

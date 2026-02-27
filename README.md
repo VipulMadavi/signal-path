@@ -15,6 +15,15 @@
 
 ---
 
+## 🌐 Live Demo
+
+**Production URL**: [https://signal-path-beige.vercel.app](https://signal-path-beige.vercel.app)
+
+> [!NOTE]
+> Live enrichment requires API keys. The demo includes a built-in Demo Mode for evaluation without keys.
+
+---
+
 ## 🛠️ Tech Stack
 
 - **Core**: [Next.js 16](https://nextjs.org/) (App Router), [TypeScript](https://www.typescriptlang.org/)
@@ -23,7 +32,6 @@
 - **Data Fetching**: [TanStack React Query](https://tanstack.com/query/latest)
 - **Icons**: [Lucide React](https://lucide.dev/)
 - **AI**: OpenAI + Google Gemini (Multi-LLM with model switching)
-
 
 ---
 
@@ -51,11 +59,11 @@
    Create a `.env.local` file in the root directory:
    
    ```env
-   # Required : At leas one AI provider key for Live Enrichment
-   OPENAI_API_KEY=your_api_key_here
+   # Required: At least one AI provider key for Live Enrichment
+   OPENAI_API_KEY=your_openai_key_here
 
-   #Optional: Add for multi-LLM model swtiching
-   GOOGLE_GENERATIVE_AI_API_KEY=your_api_key_here
+   # Optional: Add for multi-LLM model switching
+   GOOGLE_GENERATIVE_AI_API_KEY=your_gemini_key_here
    ```
    > [!IMPORTANT]
    > At least one API key is required for Live Enrichment. Without any key, enrichment runs in **Demo Mode** with sample data. All other features work regardless.
@@ -90,11 +98,30 @@ src/
 - [x] **Phase 3**: Company Profile System (Interactive Timelines).
 - [x] **Phase 4**: Lists & Saved Searches.
 - [x] **Phase 5**: Weighted Scoring Engine.
-- [x] **Phase 6**: Live AI Enrichment.
-- [x] **Phase 7**: Caching & State Management.
-- [x] **Phase 8**: UI Polish & Motion system.
+- [x] **Phase 6**: Live AI Enrichment (Server-Side).
+- [x] **Phase 7**: Multi-LLM Intelligence Infrastructure & Caching.
+- [x] **Phase 8**: UI Polish & Motion.
 - [x] **Phase 9**: Testing & Hardening.
 - [x] **Phase 10**: Production Deployment.
+
+---
+
+## 🔒 Security
+
+- API keys are **never exposed** to the browser — all enrichment runs server-side via `/api/enrich`
+- SSRF protection blocks requests to localhost, private IPs, and internal ranges
+- Rate limiting: 5 requests/minute per IP
+- URL validation rejects non-HTTPS and malformed URLs
+
+---
+
+## 🧠 Key Engineering Decisions
+
+- **Multi-LLM Support**: Switch between OpenAI and Gemini at runtime — global default or per-enrichment override
+- **Demo Mode**: App fully functional without API keys using intelligent mock data
+- **Server-Side Enrichment**: All LLM/scraping happens in Next.js API routes, zero client-side key exposure
+- **Intelligent Caching**: Both server-side (10-min TTL) and client-side (localStorage) caching with cache indicators
+- **SSRF Protection**: URL validation + private IP blocking before any fetch
 
 ---
 

@@ -27,6 +27,7 @@ import { useListStore } from "@/store/useListStore";
 import { getScoredCompanies } from "@/lib/mock-companies";
 import type { Company, VCList } from "@/types/company";
 import Link from "next/link";
+import { toast } from "sonner";
 
 // ─── Create List Modal ───
 function CreateListModal({
@@ -53,6 +54,7 @@ function CreateListModal({
     e.preventDefault();
     if (!name.trim()) return;
     createList(name.trim(), description.trim() || undefined);
+    toast.success('List created!');
     onClose();
   };
 
@@ -431,7 +433,7 @@ function ListDetailCard({
   );
 
   return (
-    <ScoutCard className="overflow-hidden transition-all duration-200">
+    <ScoutCard className="overflow-hidden transition-all duration-200 card-hover">
       {/* List Header */}
       <div className="flex items-start justify-between">
         <button
@@ -495,6 +497,7 @@ function ListDetailCard({
                   <button
                     onClick={() => {
                       exportAsCSV(list, listCompanies);
+                      toast.success('Exported as CSV');
                       setShowMenu(false);
                     }}
                     disabled={listCompanies.length === 0}
@@ -509,6 +512,7 @@ function ListDetailCard({
                   <button
                     onClick={() => {
                       exportAsJSON(list, listCompanies);
+                      toast.success('Exported as JSON');
                       setShowMenu(false);
                     }}
                     disabled={listCompanies.length === 0}
@@ -706,7 +710,7 @@ export default function ListsPage() {
   }, [lists]);
 
   return (
-    <div className="space-y-6 fade-in">
+    <div className="space-y-6 fade-in animate-fadeInUp">
       {/* Page Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
@@ -835,6 +839,7 @@ export default function ListsPage() {
         onConfirm={() => {
           if (deletingList) {
             deleteList(deletingList.id);
+            toast.success('List deleted');
             setDeletingList(null);
           }
         }}

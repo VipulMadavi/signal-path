@@ -18,7 +18,7 @@ export default function Home() {
   );
 
   return (
-    <div className="space-y-8 fade-in">
+    <div className="space-y-8 fade-in animate-fadeInUp">
       {/* Page Header */}
       <div className="space-y-2">
         <div className="flex items-center gap-3">

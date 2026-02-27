@@ -25,6 +25,7 @@ import { ScoutBadge } from "@/components/ui/ScoutBadge";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import type { Enrichment } from "@/types/company";
 import type { AIProvider, EnrichmentCacheEntry } from "@/types/enrichment";
+import { toast } from "sonner";
 
 // ─── localStorage cache helpers (centralized) ───
 const LS_ENRICHMENT_CACHE_KEY = "signalpath_enrichment_cache";
@@ -159,6 +160,7 @@ export default function EnrichmentPanel({
                 : data.error || "Enrichment failed. Please try again.";
           setError(errorMsg);
           setState("error");
+          toast.error('Enrichment failed. Please try again.');
           return;
         }
 
@@ -171,9 +173,11 @@ export default function EnrichmentPanel({
         setCachedAt(data.cached ? new Date().toISOString() : null);
         setCachedEnrichment(companyId, enrichmentData, provider);
         setState("success");
+        toast.success('Enrichment complete!');
       } catch {
         setError("Network error. Please check your connection and try again.");
         setState("error");
+        toast.error('Enrichment failed. Please try again.');
       }
     },
     [companyId, websiteUrl, activeProvider, settings.userOpenAIKey, settings.userGeminiKey]

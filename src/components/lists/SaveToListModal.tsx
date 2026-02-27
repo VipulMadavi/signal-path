@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { X, Plus, Check, List as ListIcon } from "lucide-react";
 import { ScoutButton } from "@/components/ui/ScoutButton";
 import { useListStore } from "@/store/useListStore";
+import { toast } from "sonner";
 
 interface SaveToListModalProps {
   isOpen: boolean;
@@ -43,6 +44,7 @@ export default function SaveToListModal({
     if (!newListName.trim()) return;
     const list = createList(newListName.trim(), newListDesc.trim() || undefined);
     addCompanyToList(list.id, companyId);
+    toast.success('Company added to list!');
     setNewListName("");
     setNewListDesc("");
     setIsCreating(false);
