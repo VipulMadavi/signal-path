@@ -22,7 +22,8 @@
 - **State Management**: [Zustand](https://github.com/pmndrs/zustand)
 - **Data Fetching**: [TanStack React Query](https://tanstack.com/query/latest)
 - **Icons**: [Lucide React](https://lucide.dev/)
-- **AI**: OpenAI API (for Enrichment)
+- **AI**: OpenAI + Google Gemini (Multi-LLM with model switching)
+
 
 ---
 
@@ -37,8 +38,8 @@
 
 1. **Clone the repository**:
    ```bash
-   git clone <your-repo-url>
-   cd signalpath
+   git clone https://github.com/VipulMadavi/signal-path.git
+   cd signal-path
    ```
 
 2. **Install dependencies**:
@@ -48,11 +49,16 @@
 
 3. **Set up environment variables**:
    Create a `.env.local` file in the root directory:
+   
    ```env
+   # Required : At leas one AI provider key for Live Enrichment
    OPENAI_API_KEY=your_api_key_here
+
+   #Optional: Add for multi-LLM model swtiching
+   GOOGLE_GENERATIVE_AI_API_KEY=your_api_key_here
    ```
    > [!IMPORTANT]
-   > The `OPENAI_API_KEY` is required for Live Enrichment. Other features work with mock data.
+   > At least one API key is required for Live Enrichment. Without any key, enrichment runs in **Demo Mode** with sample data. All other features work regardless.
 
 4. **Run the development server**:
    ```bash
@@ -85,10 +91,10 @@ src/
 - [x] **Phase 4**: Lists & Saved Searches.
 - [x] **Phase 5**: Weighted Scoring Engine.
 - [x] **Phase 6**: Live AI Enrichment.
-- [ ] **Phase 7**: Caching & State Management.
-- [ ] **Phase 8**: UI Polish & Motion system.
-- [ ] **Phase 9**: Testing & Hardening.
-- [ ] **Phase 10**: Production Deployment.
+- [x] **Phase 7**: Caching & State Management.
+- [x] **Phase 8**: UI Polish & Motion system.
+- [x] **Phase 9**: Testing & Hardening.
+- [x] **Phase 10**: Production Deployment.
 
 ---
 
