@@ -93,11 +93,12 @@ export default function EnrichmentPanel({
   const [showProviderPicker, setShowProviderPicker] = useState(false);
 
   // Get global default provider
-  const { settings, loadSettingsFromStorage } = useSettingsStore();
+  const { settings, loadSettingsFromStorage, fetchEnvKeyStatus, isEffectivelyDemoMode } = useSettingsStore();
 
   useEffect(() => {
     loadSettingsFromStorage();
-  }, [loadSettingsFromStorage]);
+    fetchEnvKeyStatus();
+  }, [loadSettingsFromStorage, fetchEnvKeyStatus]);
 
   // Load cached enrichment on mount
   /* eslint-disable react-hooks/set-state-in-effect */
@@ -137,13 +138,14 @@ export default function EnrichmentPanel({
 
       try {
         // Include user-provided keys if available
-        const requestBody: Record<string, string | undefined> = {
+        const requestBody: Record<string, string | boolean | undefined> = {
           companyId,
           url: websiteUrl,
           provider: activeProvider,
         };
         if (settings.userOpenAIKey) requestBody.userOpenAIKey = settings.userOpenAIKey;
         if (settings.userGeminiKey) requestBody.userGeminiKey = settings.userGeminiKey;
+        if (settings.forceDemoMode) requestBody.forceDemoMode = true;
 
         const response = await fetch("/api/enrich", {
           method: "POST",
@@ -182,7 +184,7 @@ export default function EnrichmentPanel({
         toast.error('Enrichment failed. Please try again.');
       }
     },
-    [companyId, websiteUrl, activeProvider, settings.userOpenAIKey, settings.userGeminiKey]
+    [companyId, websiteUrl, activeProvider, settings.userOpenAIKey, settings.userGeminiKey, settings.forceDemoMode]
   );
 
   // Format timestamp
@@ -200,8 +202,8 @@ export default function EnrichmentPanel({
   const providerInfo = PROVIDER_INFO[usedProvider] || PROVIDER_INFO.openai;
   const { openSettingsModal } = useSettingsStore();
 
-  // Determine if we are in demo mode (no keys at all)
-  const isInDemoMode = !settings.userOpenAIKey && !settings.userGeminiKey;
+  // Determine if we are in demo mode (force demo or no keys at all)
+  const isInDemoMode = isEffectivelyDemoMode();
 
   return (
     <div className="space-y-0">

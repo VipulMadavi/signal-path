@@ -14,6 +14,9 @@ import {
   Bot,
   Shield,
   Info,
+  FlaskConical,
+  Sparkles,
+  Server,
 } from "lucide-react";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import { ScoutButton } from "@/components/ui/ScoutButton";
@@ -57,6 +60,9 @@ export default function SettingsModal() {
     setUserOpenAIKey,
     setUserGeminiKey,
     clearUserKeys,
+    toggleDemoMode,
+    envKeyStatus,
+    fetchEnvKeyStatus,
     isSettingsModalOpen,
     closeSettingsModal,
   } = useSettingsStore();
@@ -71,18 +77,19 @@ export default function SettingsModal() {
   const [geminiStatus, setGeminiStatus] = useState<{ ok: boolean; message: string } | null>(null);
   const [saved, setSaved] = useState(false);
 
-  // Load current keys when modal opens
+  // Load current keys + env status when modal opens
   /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
     if (isSettingsModalOpen) {
       loadSettingsFromStorage();
+      fetchEnvKeyStatus();
       setOpenaiKey(settings.userOpenAIKey || "");
       setGeminiKey(settings.userGeminiKey || "");
       setOpenAIStatus(null);
       setGeminiStatus(null);
       setSaved(false);
     }
-  }, [isSettingsModalOpen, loadSettingsFromStorage, settings.userOpenAIKey, settings.userGeminiKey]);
+  }, [isSettingsModalOpen, loadSettingsFromStorage, fetchEnvKeyStatus, settings.userOpenAIKey, settings.userGeminiKey]);
   /* eslint-enable react-hooks/set-state-in-effect */
 
   // Close on Escape
@@ -136,6 +143,7 @@ export default function SettingsModal() {
   const openAIValid = isValidOpenAIKey(openaiKey);
   const geminiValid = isValidGeminiKey(geminiKey);
   const hasKeys = Boolean(openaiKey.trim() || geminiKey.trim());
+  const isDemoMode = settings.forceDemoMode;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
@@ -158,7 +166,7 @@ export default function SettingsModal() {
                 API Configuration
               </h2>
               <p className="text-[10px] text-[var(--scout-text-muted)]">
-                Provide your API keys for live enrichment
+                Manage API keys and enrichment mode
               </p>
             </div>
           </div>
@@ -171,8 +179,56 @@ export default function SettingsModal() {
           </button>
         </div>
 
+        {/* ═══ Mode Toggle Switch ═══ */}
+        <div className="mx-6 mt-4">
+          <div
+            className="relative flex items-center rounded-xl border overflow-hidden transition-all duration-300"
+            style={{
+              borderColor: isDemoMode
+                ? "color-mix(in srgb, var(--scout-warning) 30%, transparent)"
+                : "color-mix(in srgb, var(--scout-accent-teal) 30%, transparent)",
+              background: isDemoMode
+                ? "color-mix(in srgb, var(--scout-warning) 5%, transparent)"
+                : "color-mix(in srgb, var(--scout-accent-teal) 5%, transparent)",
+            }}
+          >
+            {/* Demo Mode Button */}
+            <button
+              onClick={() => { if (!isDemoMode) toggleDemoMode(); }}
+              className="flex-1 flex items-center justify-center gap-2 py-2.5 px-4 text-xs font-medium transition-all duration-300 rounded-l-xl"
+              style={{
+                background: isDemoMode ? "color-mix(in srgb, var(--scout-warning) 15%, transparent)" : "transparent",
+                color: isDemoMode ? "var(--scout-warning)" : "var(--scout-text-muted)",
+              }}
+            >
+              <FlaskConical size={14} />
+              Demo Mode
+            </button>
+
+            {/* AI Mode Button */}
+            <button
+              onClick={() => { if (isDemoMode) toggleDemoMode(); }}
+              className="flex-1 flex items-center justify-center gap-2 py-2.5 px-4 text-xs font-medium transition-all duration-300 rounded-r-xl"
+              style={{
+                background: !isDemoMode ? "color-mix(in srgb, var(--scout-accent-teal) 15%, transparent)" : "transparent",
+                color: !isDemoMode ? "var(--scout-accent-teal)" : "var(--scout-text-muted)",
+              }}
+            >
+              <Sparkles size={14} />
+              AI Mode
+            </button>
+          </div>
+
+          {/* Mode description */}
+          <p className="text-[10px] text-[var(--scout-text-muted)] mt-2 px-1">
+            {isDemoMode
+              ? "Demo mode uses mock data. No API calls are made, even if keys are configured."
+              : "AI mode uses live API calls for enrichment. Requires at least one API key."}
+          </p>
+        </div>
+
         {/* Security Notice */}
-        <div className="mx-6 mt-4 flex items-start gap-2.5 p-3 rounded-lg bg-[var(--scout-accent-teal)]/5 border border-[var(--scout-accent-teal)]/10">
+        <div className="mx-6 mt-3 flex items-start gap-2.5 p-3 rounded-lg bg-[var(--scout-accent-teal)]/5 border border-[var(--scout-accent-teal)]/10">
           <Shield size={14} className="text-[var(--scout-accent-teal)] shrink-0 mt-0.5" />
           <div>
             <p className="text-xs font-medium text-[var(--scout-text-primary)]">
@@ -186,7 +242,7 @@ export default function SettingsModal() {
         </div>
 
         {/* Body */}
-        <div className="px-6 py-4 space-y-5 max-h-[60vh] overflow-y-auto">
+        <div className={`px-6 py-4 space-y-5 max-h-[50vh] overflow-y-auto transition-opacity duration-300 ${isDemoMode ? "opacity-50 pointer-events-none" : ""}`}>
           {/* OpenAI Key */}
           <div className="space-y-2">
             <div className="flex items-center gap-2">
@@ -197,6 +253,13 @@ export default function SettingsModal() {
               <span className="text-[10px] text-[var(--scout-text-muted)] px-1.5 py-0.5 rounded bg-white/[0.04]">
                 GPT-4o Mini
               </span>
+              {/* Env key status badge */}
+              {envKeyStatus.loaded && envKeyStatus.openai && (
+                <span className="flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded-md bg-[var(--scout-success)]/10 border border-[var(--scout-success)]/20 text-[var(--scout-success)] ml-auto">
+                  <Server size={9} />
+                  Env key active
+                </span>
+              )}
             </div>
             <div className="flex gap-2">
               <div className="relative flex-1">
@@ -212,7 +275,7 @@ export default function SettingsModal() {
                     setOpenaiKey(e.target.value);
                     setOpenAIStatus(null);
                   }}
-                  placeholder="sk-..."
+                  placeholder={envKeyStatus.openai ? "Override env key (optional)..." : "sk-..."}
                   className={`w-full pl-9 pr-10 py-2.5 rounded-lg bg-white/[0.03] text-sm text-[var(--scout-text-primary)] placeholder:text-[var(--scout-text-muted)] outline-none border transition-colors ${
                     !openAIValid
                       ? "border-[var(--scout-error)]/40 focus:border-[var(--scout-error)]/60"
@@ -266,6 +329,13 @@ export default function SettingsModal() {
               <span className="text-[10px] text-[var(--scout-text-muted)] px-1.5 py-0.5 rounded bg-white/[0.04]">
                 Gemini 1.5 Flash
               </span>
+              {/* Env key status badge */}
+              {envKeyStatus.loaded && envKeyStatus.gemini && (
+                <span className="flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded-md bg-[var(--scout-success)]/10 border border-[var(--scout-success)]/20 text-[var(--scout-success)] ml-auto">
+                  <Server size={9} />
+                  Env key active
+                </span>
+              )}
             </div>
             <div className="flex gap-2">
               <div className="relative flex-1">
@@ -281,7 +351,7 @@ export default function SettingsModal() {
                     setGeminiKey(e.target.value);
                     setGeminiStatus(null);
                   }}
-                  placeholder="AIza..."
+                  placeholder={envKeyStatus.gemini ? "Override env key (optional)..." : "AIza..."}
                   className={`w-full pl-9 pr-10 py-2.5 rounded-lg bg-white/[0.03] text-sm text-[var(--scout-text-primary)] placeholder:text-[var(--scout-text-muted)] outline-none border transition-colors ${
                     !geminiValid
                       ? "border-[var(--scout-error)]/40 focus:border-[var(--scout-error)]/60"
@@ -329,18 +399,30 @@ export default function SettingsModal() {
           <div className="flex items-start gap-2 p-3 rounded-lg bg-[var(--scout-accent-purple)]/5 border border-[var(--scout-accent-purple)]/10">
             <Info size={13} className="text-[var(--scout-accent-purple)] shrink-0 mt-0.5" />
             <p className="text-[10px] text-[var(--scout-text-muted)] leading-relaxed">
-              At least one API key is required for live AI enrichment. Without keys, the system runs
-              in <strong className="text-[var(--scout-text-primary)]">Demo Mode</strong> with mock
-              data. You can switch the active model in the TopBar or per-company in the Enrichment
-              Panel.
+              {envKeyStatus.loaded && (envKeyStatus.openai || envKeyStatus.gemini)
+                ? <>Server environment keys are active (shown by the <strong className="text-[var(--scout-success)]">Env key active</strong> badge). You can optionally override them by entering a different key above, or switch to Demo Mode to use mock data.</>
+                : <>At least one API key is required for live AI enrichment. Without keys, the system runs in <strong className="text-[var(--scout-text-primary)]">Demo Mode</strong> with mock data. You can switch the active model in the TopBar or per-company in the Enrichment Panel.</>
+              }
             </p>
           </div>
         </div>
 
+        {/* Demo mode overlay message */}
+        {isDemoMode && (
+          <div className="absolute left-6 right-6 top-1/2 translate-y-4 flex items-center justify-center pointer-events-none">
+            <div className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[var(--scout-bg-secondary)] border border-[var(--scout-warning)]/30 shadow-lg shadow-black/30">
+              <FlaskConical size={16} className="text-[var(--scout-warning)]" />
+              <span className="text-xs font-medium text-[var(--scout-warning)]">
+                Demo Mode — API keys are bypassed
+              </span>
+            </div>
+          </div>
+        )}
+
         {/* Footer */}
         <div className="flex items-center justify-between px-6 py-4 border-t border-[var(--scout-border)]">
           <div className="flex items-center gap-2">
-            {hasKeys && (
+            {hasKeys && !isDemoMode && (
               <button
                 onClick={handleClearAll}
                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs text-[var(--scout-error)] hover:bg-[var(--scout-error)]/5 transition-colors"
@@ -360,9 +442,11 @@ export default function SettingsModal() {
             <ScoutButton variant="secondary" size="sm" onClick={closeSettingsModal}>
               Cancel
             </ScoutButton>
-            <ScoutButton variant="primary" size="sm" onClick={handleSave}>
-              Save Keys
-            </ScoutButton>
+            {!isDemoMode && (
+              <ScoutButton variant="primary" size="sm" onClick={handleSave}>
+                Save Keys
+              </ScoutButton>
+            )}
           </div>
         </div>
       </div>

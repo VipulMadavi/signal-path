@@ -13,6 +13,15 @@ interface AppSettings {
   // User-provided API keys (GUI-based injection)
   userOpenAIKey: string;
   userGeminiKey: string;
+  // Force demo mode even when keys exist
+  forceDemoMode: boolean;
+}
+
+// Tracks which providers have server-side env var keys
+export interface EnvKeyStatus {
+  openai: boolean;
+  gemini: boolean;
+  loaded: boolean;
 }
 
 const DEFAULT_SETTINGS: AppSettings = {
@@ -20,6 +29,7 @@ const DEFAULT_SETTINGS: AppSettings = {
   enableCaching: true,
   userOpenAIKey: "",
   userGeminiKey: "",
+  forceDemoMode: false,
 };
 
 // ─── Load settings from localStorage ───
@@ -63,6 +73,16 @@ interface SettingsStoreState {
   setUserGeminiKey: (key: string) => void;
   clearUserKeys: () => void;
   hasAnyUserKey: () => boolean;
+
+  // Demo mode
+  toggleDemoMode: () => void;
+
+  // Env key status (server-side)
+  envKeyStatus: EnvKeyStatus;
+  fetchEnvKeyStatus: () => Promise<void>;
+
+  // Computed: is effectively in demo mode?
+  isEffectivelyDemoMode: () => boolean;
 
   // Model switcher UI state
   isModelSwitcherOpen: boolean;
@@ -121,6 +141,45 @@ export const useSettingsStore = create<SettingsStoreState>((set, get) => ({
   hasAnyUserKey: () => {
     const { settings } = get();
     return Boolean(settings.userOpenAIKey || settings.userGeminiKey);
+  },
+
+  // ─── Demo Mode ───
+  toggleDemoMode: () => {
+    const { settings } = get();
+    const updated = { ...settings, forceDemoMode: !settings.forceDemoMode };
+    persistSettings(updated);
+    set({ settings: updated });
+  },
+
+  // ─── Env Key Status ───
+  envKeyStatus: { openai: false, gemini: false, loaded: false },
+
+  fetchEnvKeyStatus: async () => {
+    try {
+      const res = await fetch("/api/key-status");
+      if (res.ok) {
+        const data = await res.json();
+        set({
+          envKeyStatus: {
+            openai: Boolean(data.openai),
+            gemini: Boolean(data.gemini),
+            loaded: true,
+          },
+        });
+      }
+    } catch {
+      // Silently fail — env status stays as unknown
+    }
+  },
+
+  // ─── Computed: effectively demo mode? ───
+  isEffectivelyDemoMode: () => {
+    const { settings, envKeyStatus } = get();
+    if (settings.forceDemoMode) return true;
+    // No keys at all = demo mode
+    const hasUserKeys = Boolean(settings.userOpenAIKey || settings.userGeminiKey);
+    const hasEnvKeys = envKeyStatus.openai || envKeyStatus.gemini;
+    return !hasUserKeys && !hasEnvKeys;
   },
 
   // Model switcher dropdown state

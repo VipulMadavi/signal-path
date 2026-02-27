@@ -59,7 +59,7 @@ export async function POST(request: NextRequest) {
     }
 
     // ── Parse request body ──
-    let body: { companyId?: string; url?: string; provider?: AIProvider; userOpenAIKey?: string; userGeminiKey?: string };
+    let body: { companyId?: string; url?: string; provider?: AIProvider; userOpenAIKey?: string; userGeminiKey?: string; forceDemoMode?: boolean };
     try {
       body = await request.json();
     } catch {
@@ -69,7 +69,26 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { companyId, url, provider: requestedProvider, userOpenAIKey, userGeminiKey } = body;
+    const { companyId, url, provider: requestedProvider, userOpenAIKey, userGeminiKey, forceDemoMode } = body;
+
+    // ── Force demo mode: short-circuit to mock data ──
+    if (forceDemoMode) {
+      if (!companyId || !url) {
+        return NextResponse.json(
+          { success: false, error: "companyId and url are required." },
+          { status: 400 }
+        );
+      }
+      console.log(`[Enrich] Force demo mode — returning mock enrichment for ${companyId}`);
+      const mockData = generateMockEnrichment(companyId, url);
+      return NextResponse.json({
+        success: true,
+        data: mockData,
+        provider: "openai" as AIProvider,
+        cached: false,
+        demo: true,
+      });
+    }
 
     // Build key overrides from user-provided keys
     const keyOverrides: { openaiKey?: string; geminiKey?: string } = {};
