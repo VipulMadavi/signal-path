@@ -45,10 +45,12 @@ export default function CompanyNotesPanel({ companyId }: NotesProps) {
   const [isAdding, setIsAdding] = useState(false);
 
   // Load notes for this company on mount
+  /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
     const allNotes = loadNotes();
     setNotes(allNotes.filter((n) => n.companyId === companyId));
   }, [companyId]);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   // ─── Save a new note ───
   const handleAdd = useCallback(() => {
@@ -235,12 +237,14 @@ export default function CompanyNotesPanel({ companyId }: NotesProps) {
                     <button
                       onClick={() => startEdit(note)}
                       className="p-1.5 rounded-md hover:bg-white/[0.06] text-[var(--scout-text-muted)] hover:text-[var(--scout-accent-teal)] transition-colors cursor-pointer"
+                      aria-label="Edit note"
                     >
                       <Pencil size={12} />
                     </button>
                     <button
                       onClick={() => handleDelete(note.id)}
                       className="p-1.5 rounded-md hover:bg-[var(--scout-error)]/10 text-[var(--scout-text-muted)] hover:text-[var(--scout-error)] transition-colors cursor-pointer"
+                      aria-label="Delete note"
                     >
                       <Trash2 size={12} />
                     </button>

@@ -65,6 +65,7 @@ export default function Pagination({
           onClick={() => onPageChange(currentPage - 1)}
           disabled={currentPage === 1}
           className="p-2 rounded-lg border border-[var(--scout-border)] text-[var(--scout-text-muted)] hover:bg-white/[0.04] hover:text-[var(--scout-text-primary)] disabled:opacity-30 disabled:cursor-not-allowed transition-all cursor-pointer"
+          aria-label="Previous page"
         >
           <ChevronLeft size={14} />
         </button>
@@ -101,6 +102,7 @@ export default function Pagination({
           onClick={() => onPageChange(currentPage + 1)}
           disabled={currentPage === totalPages}
           className="p-2 rounded-lg border border-[var(--scout-border)] text-[var(--scout-text-muted)] hover:bg-white/[0.04] hover:text-[var(--scout-text-primary)] disabled:opacity-30 disabled:cursor-not-allowed transition-all cursor-pointer"
+          aria-label="Next page"
         >
           <ChevronRight size={14} />
         </button>

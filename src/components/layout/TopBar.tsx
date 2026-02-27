@@ -77,6 +77,7 @@ export default function TopBar() {
           <button
             id="workspace-switcher"
             className="hidden lg:flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm text-[var(--scout-text-muted)] hover:text-[var(--scout-text-primary)] hover:bg-white/[0.04] transition-scout"
+            aria-label="Switch workspace"
           >
             <span className="w-2 h-2 rounded-full bg-[var(--scout-accent-teal)]" />
             <span>Default Workspace</span>

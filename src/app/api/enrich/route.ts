@@ -7,7 +7,6 @@ import {
 } from "@/lib/enrichment";
 import {
   callAIProvider,
-  isProviderAvailable,
   getAvailableProviders,
 } from "@/lib/ai-provider";
 import type { AIProvider } from "@/types/enrichment";

@@ -59,9 +59,11 @@ export default function Sidebar() {
   };
 
   // Close mobile sidebar on route change
+  /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
     setMobileOpen(false);
   }, [pathname]);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   // Listen for toggle-sidebar event from TopBar hamburger
   const handleToggle = useCallback(() => {

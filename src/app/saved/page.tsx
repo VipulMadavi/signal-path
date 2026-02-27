@@ -31,15 +31,7 @@ function formatDate(iso: string): string {
   });
 }
 
-function formatDateTime(iso: string): string {
-  return new Date(iso).toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-    hour: "numeric",
-    minute: "2-digit",
-  });
-}
+
 
 function timeAgo(iso: string): string {
   const now = Date.now();
@@ -263,6 +255,7 @@ function SavedSearchCard({
             size="icon"
             onClick={onDelete}
             className="hover:!bg-[var(--scout-error)]/10 hover:!text-[var(--scout-error)]"
+            aria-label="Delete saved search"
           >
             <Trash2 size={14} />
           </ScoutButton>
@@ -289,6 +282,20 @@ export default function SavedPage() {
   useEffect(() => {
     loadSavedSearchesFromStorage();
   }, [loadSavedSearchesFromStorage]);
+
+  // Count recently run searches (useState+useEffect to avoid impure Date.now in render)
+  const [recentlyRunCount, setRecentlyRunCount] = useState(0);
+  /* eslint-disable react-hooks/set-state-in-effect */
+  useEffect(() => {
+    const dayAgo = Date.now() - 86_400_000;
+    setRecentlyRunCount(
+      savedSearches.filter((s) => {
+        if (!s.lastRunAt) return false;
+        return new Date(s.lastRunAt).getTime() > dayAgo;
+      }).length
+    );
+  }, [savedSearches]);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   // Filtered saved searches
   const filteredSearches = useMemo(() => {
@@ -347,6 +354,7 @@ export default function SavedPage() {
               <button
                 onClick={() => setSearchFilter("")}
                 className="absolute right-2 top-1/2 -translate-y-1/2 p-0.5 rounded text-[var(--scout-text-muted)] hover:text-[var(--scout-text-primary)] cursor-pointer"
+                aria-label="Clear search filter"
               >
                 <X size={12} />
               </button>
@@ -366,13 +374,7 @@ export default function SavedPage() {
         <ScoutCard className="!p-4">
           <p className="text-meta mb-1">Recently Run</p>
           <p className="text-2xl font-semibold text-[var(--scout-accent-blue)] tabular-nums">
-            {
-              savedSearches.filter((s) => {
-                if (!s.lastRunAt) return false;
-                const dayAgo = Date.now() - 86_400_000;
-                return new Date(s.lastRunAt).getTime() > dayAgo;
-              }).length
-            }
+            {recentlyRunCount}
           </p>
           <p className="text-xs text-[var(--scout-text-muted)] mt-0.5">
             in last 24h

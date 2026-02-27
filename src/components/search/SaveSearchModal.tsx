@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
-import { Bookmark, X } from "lucide-react";
+import { X } from "lucide-react";
 import { ScoutButton } from "@/components/ui/ScoutButton";
 import { toast } from "sonner";
 
@@ -11,30 +11,26 @@ interface SaveSearchModalProps {
   onSave: (name: string) => void;
 }
 
-export default function SaveSearchModal({
-  isOpen,
+function SaveSearchModalContent({
   onClose,
   onSave,
-}: SaveSearchModalProps) {
+}: {
+  onClose: () => void;
+  onSave: (name: string) => void;
+}) {
   const [name, setName] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    if (isOpen) {
-      setName("");
-      // slight delay to ensure DOM is ready
-      setTimeout(() => inputRef.current?.focus(), 100);
-    }
-  }, [isOpen]);
-
-  if (!isOpen) return null;
+    const timer = setTimeout(() => inputRef.current?.focus(), 100);
+    return () => clearTimeout(timer);
+  }, []);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (name.trim()) {
       onSave(name.trim());
       toast.success('Search saved!');
-      setName("");
     }
   };
 
@@ -52,7 +48,7 @@ export default function SaveSearchModal({
         <div className="flex items-center justify-between p-5 border-b border-[var(--scout-border)]">
           <div className="flex items-center gap-2">
             <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-[var(--scout-accent-teal)]/10">
-              <Bookmark size={16} className="text-[var(--scout-accent-teal)]" />
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-[var(--scout-accent-teal)]"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg>
             </div>
             <div>
               <h3 className="text-sm font-semibold text-[var(--scout-text-heading)]">
@@ -66,6 +62,7 @@ export default function SaveSearchModal({
           <button
             onClick={onClose}
             className="p-1.5 rounded-lg hover:bg-white/[0.06] transition-colors cursor-pointer"
+            aria-label="Close modal"
           >
             <X size={16} className="text-[var(--scout-text-muted)]" />
           </button>
@@ -95,7 +92,6 @@ export default function SaveSearchModal({
               size="sm"
               disabled={!name.trim()}
             >
-              <Bookmark size={14} />
               Save Search
             </ScoutButton>
           </div>
@@ -103,4 +99,13 @@ export default function SaveSearchModal({
       </div>
     </div>
   );
+}
+
+export default function SaveSearchModal({
+  isOpen,
+  onClose,
+  onSave,
+}: SaveSearchModalProps) {
+  if (!isOpen) return null;
+  return <SaveSearchModalContent onClose={onClose} onSave={onSave} />;
 }

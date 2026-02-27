@@ -1,7 +1,7 @@
 "use client";
 
 import { create } from "zustand";
-import type { SearchFilters, SavedSearch } from "@/types/search";
+import type { SearchFilters } from "@/types/search";
 
 // ─── LocalStorage key ───
 const LS_SEARCH_CONFIG_KEY = "signalpath_search_config";

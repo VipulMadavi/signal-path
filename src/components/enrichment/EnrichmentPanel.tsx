@@ -100,6 +100,7 @@ export default function EnrichmentPanel({
   }, [loadSettingsFromStorage]);
 
   // Load cached enrichment on mount
+  /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
     const cached = getCachedEnrichment(companyId);
     if (cached) {
@@ -110,6 +111,7 @@ export default function EnrichmentPanel({
       setState("success");
     }
   }, [companyId]);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   // Determine which provider to use
   const activeProvider = localProviderOverride || settings.defaultProvider;

@@ -81,7 +81,7 @@ export default function CompanyProfilePage() {
 
   // Get score breakdown
   const scoreBreakdown = useMemo(
-    () => (company ? getScoreBreakdown(companyId, company.score) : null),
+    () => (company ? getScoreBreakdown(companyId) : null),
     [companyId, company]
   );
 

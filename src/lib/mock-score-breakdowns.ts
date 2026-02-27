@@ -20,8 +20,7 @@ for (const company of mockCompanies) {
  * Falls back to a dynamically computed breakdown if not pre-cached.
  */
 export function getScoreBreakdown(
-  companyId: string,
-  _totalScore?: number
+  companyId: string
 ): ScoreBreakdown {
   // Return pre-computed breakdown if available
   if (computedBreakdowns[companyId]) {

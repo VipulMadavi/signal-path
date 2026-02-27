@@ -1,9 +1,8 @@
 "use client";
 
-import { Building2, ListChecks, Bookmark, Zap, TrendingUp, Target } from "lucide-react";
-import { ScoutButton } from "@/components/ui/ScoutButton";
+import { Building2, Zap, TrendingUp, Target } from "lucide-react";
 import { ScoutCard, ScoutCardHeader, ScoutCardTitle, ScoutCardContent } from "@/components/ui/ScoutCard";
-import { ScoutBadge, StageBadge } from "@/components/ui/ScoutBadge";
+import { ScoutBadge } from "@/components/ui/ScoutBadge";
 import Link from "next/link";
 import { getScoredCompanies } from "@/lib/mock-companies";
 

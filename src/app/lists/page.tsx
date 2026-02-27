@@ -19,7 +19,6 @@ import {
 import { ScoutButton } from "@/components/ui/ScoutButton";
 import {
   ScoutCard,
-  ScoutCardTitle,
 } from "@/components/ui/ScoutCard";
 import { ScoutBadge, StageBadge } from "@/components/ui/ScoutBadge";
 import { useListStore } from "@/store/useListStore";
@@ -29,25 +28,14 @@ import Link from "next/link";
 import { toast } from "sonner";
 
 // ─── Create List Modal ───
-function CreateListModal({
-  isOpen,
+function CreateListModalContent({
   onClose,
 }: {
-  isOpen: boolean;
   onClose: () => void;
 }) {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const createList = useListStore((s) => s.createList);
-
-  useEffect(() => {
-    if (isOpen) {
-      setName("");
-      setDescription("");
-    }
-  }, [isOpen]);
-
-  if (!isOpen) return null;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -86,6 +74,7 @@ function CreateListModal({
             <button
               onClick={onClose}
               className="p-1.5 rounded-lg hover:bg-white/[0.06] text-[var(--scout-text-muted)] hover:text-[var(--scout-text-primary)] transition-colors cursor-pointer"
+              aria-label="Close modal"
             >
               <X size={16} />
             </button>
@@ -143,27 +132,16 @@ function CreateListModal({
 }
 
 // ─── Edit List Modal ───
-function EditListModal({
+function EditListModalContent({
   list,
-  isOpen,
   onClose,
 }: {
-  list: VCList | null;
-  isOpen: boolean;
+  list: VCList;
   onClose: () => void;
 }) {
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
+  const [name, setName] = useState(list.name);
+  const [description, setDescription] = useState(list.description || "");
   const updateList = useListStore((s) => s.updateList);
-
-  useEffect(() => {
-    if (isOpen && list) {
-      setName(list.name);
-      setDescription(list.description || "");
-    }
-  }, [isOpen, list]);
-
-  if (!isOpen || !list) return null;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -472,6 +450,7 @@ function ListDetailCard({
               variant="muted"
               size="icon"
               onClick={() => setShowMenu(!showMenu)}
+              aria-label="List actions menu"
             >
               <MoreVertical size={14} />
             </ScoutButton>
@@ -847,3 +826,28 @@ export default function ListsPage() {
     </div>
   );
 }
+
+function CreateListModal({
+  isOpen,
+  onClose,
+}: {
+  isOpen: boolean;
+  onClose: () => void;
+}) {
+  if (!isOpen) return null;
+  return <CreateListModalContent onClose={onClose} />;
+}
+
+function EditListModal({
+  list,
+  isOpen,
+  onClose,
+}: {
+  list: VCList | null;
+  isOpen: boolean;
+  onClose: () => void;
+}) {
+  if (!isOpen || !list) return null;
+  return <EditListModalContent list={list} onClose={onClose} />;
+}
+

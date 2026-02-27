@@ -84,6 +84,7 @@ src/
 ├── app/            # Next.js App Router (Routes & API)
 ├── components/     # UI components (Layout, Tables, UI kits)
 ├── lib/            # Utilities (Scoring engine, enrichment helpers)
+│   └── __tests__/  # Unit tests (Vitest)
 ├── store/          # Zustand state management
 ├── types/          # TypeScript interfaces/types
 └── public/         # Static assets
@@ -103,6 +104,23 @@ src/
 - [x] **Phase 8**: UI Polish & Motion.
 - [x] **Phase 9**: Testing & Hardening.
 - [x] **Phase 10**: Production Deployment.
+- [x] **Phase 11**: Production Hardening (Final Audit).
+
+---
+
+## 🧪 Testing
+
+```bash
+npm run test       # Vitest – 59 unit tests
+npm run lint       # ESLint – 0 errors, 0 warnings
+npm run build      # Next.js production build
+```
+
+| Suite            | Tests | Status |
+|------------------|-------|--------|
+| `scoring.test.ts`    | 16    | ✅ Pass |
+| `enrichment.test.ts` | 43    | ✅ Pass |
+| **Total**            | **59**| **✅ All Pass** |
 
 ---
 
@@ -122,6 +140,8 @@ src/
 - **Server-Side Enrichment**: All LLM/scraping happens in Next.js API routes, zero client-side key exposure
 - **Intelligent Caching**: Both server-side (10-min TTL) and client-side (localStorage) caching with cache indicators
 - **SSRF Protection**: URL validation + private IP blocking before any fetch
+- **Accessibility**: All icon-only buttons have `aria-label` attributes, semantic HTML throughout
+- **Automated Testing**: Vitest unit tests covering scoring engine and enrichment/SSRF validation
 
 ---
 

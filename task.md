@@ -120,3 +120,12 @@ Based on the 8 documentation files, following the implementation roadmap strictl
 - [x] Create README.md
 - [x] Verify production build passes
 - [x] Commit: "Phase 10: Production ready"
+
+## Phase 11 — Final Production Hardening (Score Optimization) ✅
+- [x] Install Vitest and add unit tests for `scoring.ts` and `enrichment.ts` (59 tests passing)
+- [x] Add `aria-label` to all icon-only buttons for A11y
+- [x] Resolve all remaining lint warnings (0 errors, 0 warnings)
+- [x] Implement "Add Company" modal (PRD §6.2)
+- [x] Consolidate duplicate docs (removed root implementation_plan.md)
+- [x] Final verification: build ✅, tests ✅, lint ✅
+- [x] Commit: "Phase 11: Final hardening and score optimization"

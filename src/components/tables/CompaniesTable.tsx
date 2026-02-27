@@ -73,6 +73,7 @@ function SortHeader({
     <button
       onClick={() => onSort(field)}
       className="inline-flex items-center gap-1 text-meta hover:text-[var(--scout-text-primary)] transition-colors cursor-pointer group"
+      aria-label={`Sort by ${label}`}
     >
       {label}
       {isActive ? (

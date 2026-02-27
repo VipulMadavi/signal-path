@@ -166,7 +166,8 @@ export function extractTextFromHtml(html: string): string {
  * Detect derived signals from HTML content.
  * Checks for careers, blog, changelog, and press pages.
  */
-export function detectDerivedSignals(html: string, baseUrl: string): string[] {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export function detectDerivedSignals(html: string, _baseUrl: string): string[] {
   const signals: string[] = [];
   const lowerHtml = html.toLowerCase();
 

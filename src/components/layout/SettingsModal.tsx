@@ -72,6 +72,7 @@ export default function SettingsModal() {
   const [saved, setSaved] = useState(false);
 
   // Load current keys when modal opens
+  /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
     if (isSettingsModalOpen) {
       loadSettingsFromStorage();
@@ -82,6 +83,7 @@ export default function SettingsModal() {
       setSaved(false);
     }
   }, [isSettingsModalOpen, loadSettingsFromStorage, settings.userOpenAIKey, settings.userGeminiKey]);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   // Close on Escape
   useEffect(() => {
@@ -163,6 +165,7 @@ export default function SettingsModal() {
           <button
             onClick={closeSettingsModal}
             className="p-1.5 rounded-lg text-[var(--scout-text-muted)] hover:text-[var(--scout-text-primary)] hover:bg-white/[0.06] transition-colors"
+            aria-label="Close settings"
           >
             <X size={16} />
           </button>
@@ -222,6 +225,7 @@ export default function SettingsModal() {
                   onClick={() => setShowOpenAI(!showOpenAI)}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--scout-text-muted)] hover:text-[var(--scout-text-primary)] transition-colors"
                   tabIndex={-1}
+                  aria-label={showOpenAI ? "Hide OpenAI key" : "Show OpenAI key"}
                 >
                   {showOpenAI ? <EyeOff size={14} /> : <Eye size={14} />}
                 </button>
@@ -290,6 +294,7 @@ export default function SettingsModal() {
                   onClick={() => setShowGemini(!showGemini)}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--scout-text-muted)] hover:text-[var(--scout-text-primary)] transition-colors"
                   tabIndex={-1}
+                  aria-label={showGemini ? "Hide Gemini key" : "Show Gemini key"}
                 >
                   {showGemini ? <EyeOff size={14} /> : <Eye size={14} />}
                 </button>

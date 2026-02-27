@@ -1,11 +1,12 @@
 "use client";
 
-import React, { useMemo, useEffect } from "react";
+import React, { useMemo, useEffect, useState, useCallback } from "react";
 import {
   Building2,
   Search,
   Bookmark,
   SlidersHorizontal,
+  Plus,
 } from "lucide-react";
 import { getScoredCompanies } from "@/lib/mock-companies";
 import { useCompanyStore } from "@/store/useCompanyStore";
@@ -14,6 +15,7 @@ import CompanyFilters from "@/components/search/CompanyFilters";
 import Pagination from "@/components/tables/Pagination";
 import SaveSearchModal from "@/components/search/SaveSearchModal";
 import { ScoutButton } from "@/components/ui/ScoutButton";
+import AddCompanyModal from "@/components/search/AddCompanyModal";
 import type { Company, SearchFilters } from "@/types/company";
 
 // ─── Helpers for filter options ───
@@ -47,30 +49,41 @@ export default function CompaniesPage() {
     loadSavedSearchesFromStorage,
   } = useCompanyStore();
 
+  // User-added companies (local state)
+  const [userCompanies, setUserCompanies] = useState<Company[]>([]);
+  const [isAddCompanyOpen, setIsAddCompanyOpen] = useState(false);
+
+  const handleAddCompany = useCallback((company: Company) => {
+    setUserCompanies((prev) => [company, ...prev]);
+  }, []);
+
   // Load saved searches on mount
   useEffect(() => {
     loadSavedSearchesFromStorage();
   }, [loadSavedSearchesFromStorage]);
 
-  // ─── Filter options from all companies ───
-  const scoredCompanies = useMemo(() => getScoredCompanies(), []);
+  // ─── Filter options from all companies (mock + user-added) ───
+  const allCompanies = useMemo(
+    () => [...userCompanies, ...getScoredCompanies()],
+    [userCompanies]
+  );
 
   const stageOptions = useMemo(
-    () => getFilterOptions(scoredCompanies, "stage"),
-    [scoredCompanies]
+    () => getFilterOptions(allCompanies, "stage"),
+    [allCompanies]
   );
   const sectorOptions = useMemo(
-    () => getFilterOptions(scoredCompanies, "sector"),
-    [scoredCompanies]
+    () => getFilterOptions(allCompanies, "sector"),
+    [allCompanies]
   );
   const countryOptions = useMemo(
-    () => getFilterOptions(scoredCompanies, "country"),
-    [scoredCompanies]
+    () => getFilterOptions(allCompanies, "country"),
+    [allCompanies]
   );
 
   // ─── Apply filters + search ───
   const filteredCompanies = useMemo(() => {
-    let result = [...scoredCompanies];
+    let result = [...allCompanies];
 
     // Text search
     if (filters.query) {
@@ -133,7 +146,7 @@ export default function CompaniesPage() {
     });
 
     return result;
-  }, [filters, scoredCompanies]);
+  }, [filters, allCompanies]);
 
   // ─── Pagination ───
   const totalPages = Math.ceil(filteredCompanies.length / pageSize);
@@ -197,6 +210,10 @@ export default function CompaniesPage() {
           <ScoutButton variant="secondary" size="sm" onClick={toggleSaveSearch}>
             <Bookmark size={14} />
             Save Search
+          </ScoutButton>
+          <ScoutButton variant="primary" size="sm" onClick={() => setIsAddCompanyOpen(true)}>
+            <Plus size={14} />
+            New Company
           </ScoutButton>
         </div>
       </div>
@@ -262,6 +279,11 @@ export default function CompaniesPage() {
         isOpen={isSaveSearchOpen}
         onClose={toggleSaveSearch}
         onSave={saveCurrentSearch}
+      />
+      <AddCompanyModal
+        isOpen={isAddCompanyOpen}
+        onClose={() => setIsAddCompanyOpen(false)}
+        onAdd={handleAddCompany}
       />
     </div>
   );
