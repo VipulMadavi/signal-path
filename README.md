@@ -6,10 +6,11 @@
 
 ## ✨ Features
 
-- **Companies Discovery System**: High-performance, filterable and sortable data table for exploring 20+ curated mock startups.
+- **Companies Discovery System**: High-performance, filterable and sortable data table for exploring 24 curated mock startups.
 - **AI-Powered Live Enrichment**: Extract structured insights (team, mission, signals) directly from company websites using LLMs.
 - **Heuristic Scoring Engine**: A weighted scoring formula that evaluates startups across Signal Strength, Market Timing, Thesis Fit, and Team quality.
 - **Dynamic Company Profiles**: Interactive timelines of signals, score breakdowns, and integrated note-taking.
+- **Global Search**: Instant company search from anywhere in the app — type in the top bar and press Enter to filter across all 24 startups.
 - **Personal Lists & Saved Searches**: Organize your deal flow with custom lists and one-click access to filtered searches.
 - **Premium UI/UX**: A state-of-the-art dark theme built with glassmorphism, smooth micro-animations, and a focus on data density.
 
@@ -105,6 +106,7 @@ src/
 - [x] **Phase 9**: Testing & Hardening.
 - [x] **Phase 10**: Production Deployment.
 - [x] **Phase 11**: Production Hardening (Final Audit).
+- [x] **Phase 12**: Final QA — Global search wired, TopBar dropdowns (Workspace, Notifications, Profile) made interactive.
 
 ---
 
@@ -141,6 +143,7 @@ npm run build      # Next.js production build
 - **Intelligent Caching**: Both server-side (10-min TTL) and client-side (localStorage) caching with cache indicators
 - **SSRF Protection**: URL validation + private IP blocking before any fetch
 - **Accessibility**: All icon-only buttons have `aria-label` attributes, semantic HTML throughout
+- **Global Search**: TopBar search wires directly into Zustand store — navigates to `/companies` and live-filters results; syncs bidirectionally with the page-level search bar
 - **Automated Testing**: Vitest unit tests covering scoring engine and enrichment/SSRF validation
 
 ---
