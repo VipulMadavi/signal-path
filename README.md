@@ -81,14 +81,27 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 ## 📂 Project Structure
 
 ```text
-src/
-├── app/            # Next.js App Router (Routes & API)
-├── components/     # UI components (Layout, Tables, UI kits)
-├── lib/            # Utilities (Scoring engine, enrichment helpers)
-│   └── __tests__/  # Unit tests (Vitest)
-├── store/          # Zustand state management
-├── types/          # TypeScript interfaces/types
-└── public/         # Static assets
+signal-path/
+├── src/
+│   ├── app/            # Next.js App Router (routes & API endpoints)
+│   ├── components/     # UI components (layout, tables, cards, UI kit)
+│   ├── lib/            # Core utilities — scoring engine, enrichment, storage
+│   │   └── __tests__/  # Vitest unit tests (59 tests)
+│   ├── store/          # Zustand state management
+│   └── types/          # TypeScript interfaces & types
+├── docs/               # Full project documentation
+│   ├── prd.md                          # Product Requirements Document
+│   ├── tech_arch_doc.md                # Technical Architecture
+│   ├── implementation_plan.md          # Phase-by-phase build plan
+│   ├── testing_QA_doc.md               # Testing & QA specification
+│   ├── api_enrichment_doc.md           # Enrichment API design
+│   ├── data_model_schema_doc.md        # Data model & schema
+│   ├── design_system_doc.md            # Design system tokens & components
+│   └── readme_and_deployment_doc.md    # Deployment guide
+├── public/             # Static assets
+├── .planning/          # Internal planning artifacts (not for evaluation)
+├── .env.example        # Environment variable template
+└── README.md           # This file
 ```
 
 ---
