@@ -38,7 +38,7 @@ export default function Home() {
 
       {/* Quick Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <ScoutCard interactive>
+        <ScoutCard interactive className="card-hover">
           <Link href="/companies" className="block">
             <ScoutCardHeader>
               <ScoutCardTitle>
@@ -58,7 +58,7 @@ export default function Home() {
           </Link>
         </ScoutCard>
 
-        <ScoutCard interactive>
+        <ScoutCard interactive className="card-hover">
           <Link href="/companies" className="block">
             <ScoutCardHeader>
               <ScoutCardTitle>
@@ -78,7 +78,7 @@ export default function Home() {
           </Link>
         </ScoutCard>
 
-        <ScoutCard interactive>
+        <ScoutCard interactive className="card-hover">
           <Link href={`/companies/${topCompany.id}`} className="block">
             <ScoutCardHeader>
               <ScoutCardTitle>

@@ -8,7 +8,6 @@ import {
   Clock,
   Search,
   Filter,
-  ArrowUpDown,
   X,
   CalendarClock,
   Zap,
@@ -315,13 +314,13 @@ export default function SavedPage() {
   return (
     <div className="space-y-6 fade-in animate-fadeInUp">
       {/* Page Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div className="flex items-center gap-3">
-          <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-[var(--scout-accent-blue)]/10">
+          <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-[var(--scout-accent-blue)]/10 flex-shrink-0">
             <Bookmark size={20} className="text-[var(--scout-accent-blue)]" />
           </div>
           <div>
-            <h1 className="text-2xl font-semibold text-[var(--scout-text-heading)]">
+            <h1 className="text-xl sm:text-2xl font-semibold text-[var(--scout-text-heading)]">
               Saved Searches
             </h1>
             <p className="text-sm text-[var(--scout-text-muted)]">
@@ -342,7 +341,7 @@ export default function SavedPage() {
               value={searchFilter}
               onChange={(e) => setSearchFilter(e.target.value)}
               placeholder="Filter searches..."
-              className="pl-8 pr-3 py-2 w-48 rounded-lg border border-[var(--scout-border)] bg-[var(--scout-bg-secondary)] text-sm text-[var(--scout-text-primary)] placeholder:text-[var(--scout-text-muted)]/50 focus:outline-none focus:border-[var(--scout-accent-teal)]/40 transition-all"
+              className="pl-8 pr-3 py-2 w-full sm:w-48 rounded-lg border border-[var(--scout-border)] bg-[var(--scout-bg-secondary)] text-sm text-[var(--scout-text-primary)] placeholder:text-[var(--scout-text-muted)]/50 focus:outline-none focus:border-[var(--scout-accent-teal)]/40 transition-all"
             />
             {searchFilter && (
               <button

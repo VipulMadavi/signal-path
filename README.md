@@ -17,7 +17,7 @@
 
 ## 🌐 Live Demo
 
-**Production URL**: [https://signal-path-beige.vercel.app](https://signal-path-beige.vercel.app)
+**Production URL**: [https://signalpath-ai.vercel.app](https://signalpath-ai.vercel.app)
 
 > [!NOTE]
 > Live enrichment requires API keys. The demo includes a built-in Demo Mode for evaluation without keys.

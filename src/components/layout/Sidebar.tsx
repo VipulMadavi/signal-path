@@ -6,13 +6,13 @@ import {
   Building2,
   ListChecks,
   Bookmark,
-  Search,
   Settings,
   ChevronLeft,
   ChevronRight,
   Zap,
+  X,
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useKeyboardShortcuts } from "@/lib/useKeyboardShortcuts";
 
 interface NavItem {
@@ -50,6 +50,7 @@ const secondaryNav: NavItem[] = [
 export default function Sidebar() {
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
   useKeyboardShortcuts();
 
   const isActive = (href: string) => {
@@ -57,16 +58,53 @@ export default function Sidebar() {
     return pathname.startsWith(href);
   };
 
+  // Close mobile sidebar on route change
+  useEffect(() => {
+    setMobileOpen(false);
+  }, [pathname]);
+
+  // Listen for toggle-sidebar event from TopBar hamburger
+  const handleToggle = useCallback(() => {
+    setMobileOpen((prev) => !prev);
+  }, []);
+
+  useEffect(() => {
+    window.addEventListener("toggle-sidebar", handleToggle);
+    return () => window.removeEventListener("toggle-sidebar", handleToggle);
+  }, [handleToggle]);
+
+  // Close on Escape
+  useEffect(() => {
+    if (!mobileOpen) return;
+    const handleEsc = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setMobileOpen(false);
+    };
+    window.addEventListener("keydown", handleEsc);
+    return () => window.removeEventListener("keydown", handleEsc);
+  }, [mobileOpen]);
+
   return (
     <>
-      {/* Mobile overlay */}
+      {/* Mobile overlay backdrop */}
+      {mobileOpen && (
+        <div
+          className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm md:hidden"
+          onClick={() => setMobileOpen(false)}
+          aria-hidden="true"
+        />
+      )}
+
       <aside
         id="sidebar"
         className={`
-          fixed top-0 left-0 z-40 h-screen flex flex-col
+          fixed top-0 left-0 z-50 h-screen flex flex-col
           bg-[var(--scout-bg-primary)] border-r border-[var(--scout-border)]
           transition-all duration-300 ease-in-out
-          ${collapsed ? "w-[68px]" : "w-[240px]"}
+          ${/* Mobile: slide in/out */""}
+          ${mobileOpen ? "translate-x-0" : "-translate-x-full"}
+          md:translate-x-0
+          ${collapsed ? "md:w-[68px]" : "md:w-[240px]"}
+          w-[260px]
         `}
       >
         {/* Logo */}
@@ -81,19 +119,28 @@ export default function Sidebar() {
               </span>
             )}
           </Link>
+          {/* Desktop collapse toggle */}
           <button
             id="sidebar-toggle"
             onClick={() => setCollapsed(!collapsed)}
-            className="p-1 rounded-md text-[var(--scout-text-muted)] hover:text-[var(--scout-text-primary)] hover:bg-[var(--scout-border-light)] transition-scout"
+            className="hidden md:flex p-1 rounded-md text-[var(--scout-text-muted)] hover:text-[var(--scout-text-primary)] hover:bg-[var(--scout-border-light)] transition-scout"
             aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
           >
             {collapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
+          </button>
+          {/* Mobile close button */}
+          <button
+            onClick={() => setMobileOpen(false)}
+            className="md:hidden p-1 rounded-md text-[var(--scout-text-muted)] hover:text-[var(--scout-text-primary)] hover:bg-[var(--scout-border-light)] transition-scout"
+            aria-label="Close sidebar"
+          >
+            <X size={18} />
           </button>
         </div>
 
         {/* Primary Nav */}
         <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
-          <div className={`mb-3 ${collapsed ? "hidden" : ""}`}>
+          <div className={`mb-3 ${collapsed ? "md:hidden" : ""}`}>
             <span className="text-meta px-3">Discovery</span>
           </div>
           {primaryNav.map((item) => {
@@ -118,11 +165,9 @@ export default function Sidebar() {
                   <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 rounded-r-full bg-[var(--scout-accent-teal)]" />
                 )}
                 <span className="flex-shrink-0">{item.icon}</span>
-                {!collapsed && (
-                  <span className="text-sm font-medium whitespace-nowrap fade-in">
-                    {item.label}
-                  </span>
-                )}
+                <span className={`text-sm font-medium whitespace-nowrap fade-in ${collapsed ? "md:hidden" : ""}`}>
+                  {item.label}
+                </span>
               </Link>
             );
           })}
@@ -147,11 +192,9 @@ export default function Sidebar() {
                 `}
               >
                 <span className="flex-shrink-0">{item.icon}</span>
-                {!collapsed && (
-                  <span className="text-sm font-medium whitespace-nowrap fade-in">
-                    {item.label}
-                  </span>
-                )}
+                <span className={`text-sm font-medium whitespace-nowrap fade-in ${collapsed ? "md:hidden" : ""}`}>
+                  {item.label}
+                </span>
               </Link>
             );
           })}

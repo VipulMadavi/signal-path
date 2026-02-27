@@ -7,7 +7,7 @@
 
 SignalPath is a VC intelligence platform (Next.js + TypeScript + TailwindCSS + Shadcn/UI).
 - **Repo**: https://github.com/VipulMadavi/signal-path.git
-- **Live URL**: https://signal-path-beige.vercel.app/
+- **Live URL**: https://signalpath-ai.vercel.app/
 - **Branch**: master
 - **Project Root**: `f:\SEM6\test- VC app`
 
@@ -89,7 +89,7 @@ Open [README.md](file:///f:/SEM6/test-%20VC%20app/README.md) and make these chan
    ```markdown
    ## 🌐 Live Demo
    
-   **Production URL**: [https://signal-path-beige.vercel.app](https://signal-path-beige.vercel.app)
+   **Production URL**: [https://signalpath-ai.vercel.app](https://signalpath-ai.vercel.app)
    
    > [!NOTE]
    > Live enrichment requires API keys. The demo includes a built-in Demo Mode for evaluation without keys.
@@ -476,7 +476,7 @@ This table shows exactly which files each phase owns. **No two phases modify the
 | Demo Mode badge | ✅ Shows in UI when no keys |
 | Server + client caching | ✅ Both implemented |
 | Enrichment timeout fix | ✅ Pushed (commit 2d12dc6) |
-| Vercel deployment | ✅ Live at signal-path-beige.vercel.app |
+| Vercel deployment | ✅ Live at signalpath-ai.vercel.app |
 
 ---
 

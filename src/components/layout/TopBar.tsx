@@ -1,6 +1,6 @@
 "use client";
 
-import { Search, Bell, User, ChevronDown, Settings } from "lucide-react";
+import { Search, Bell, User, ChevronDown, Settings, Menu } from "lucide-react";
 import { useState, useEffect } from "react";
 import ModelSwitcher from "@/components/layout/ModelSwitcher";
 import SettingsModal from "@/components/layout/SettingsModal";
@@ -21,13 +21,23 @@ export default function TopBar() {
     <>
       <header
         id="topbar"
-        className="sticky top-0 z-30 flex items-center justify-between h-16 px-6 bg-[var(--scout-bg-secondary)]/80 backdrop-blur-xl border-b border-[var(--scout-border)]"
+        className="sticky top-0 z-30 flex items-center justify-between h-14 md:h-16 px-3 md:px-6 gap-2 bg-[var(--scout-bg-secondary)]/80 backdrop-blur-xl border-b border-[var(--scout-border)]"
       >
+        {/* Hamburger menu - mobile only */}
+        <button
+          id="mobile-menu-btn"
+          onClick={() => window.dispatchEvent(new Event("toggle-sidebar"))}
+          className="md:hidden flex items-center justify-center w-9 h-9 rounded-lg text-[var(--scout-text-muted)] hover:text-[var(--scout-text-primary)] hover:bg-white/[0.04] transition-scout flex-shrink-0"
+          aria-label="Open menu"
+        >
+          <Menu size={20} />
+        </button>
+
         {/* Global Search */}
-        <div className="flex-1 max-w-xl min-w-0">
+        <div className="flex-1 min-w-0 max-w-xl">
           <div
             className={`
-              flex items-center gap-2 px-3 py-2 rounded-lg
+              flex items-center gap-2 px-3 py-1.5 md:py-2 rounded-lg
               bg-white/[0.04] border transition-all duration-200
               ${
                 searchFocused
@@ -47,7 +57,7 @@ export default function TopBar() {
             <input
               id="global-search"
               type="text"
-              placeholder="Search companies, lists, signals..."
+              placeholder="Search companies..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               onFocus={() => setSearchFocused(true)}
@@ -62,11 +72,11 @@ export default function TopBar() {
         </div>
 
         {/* Right Section */}
-        <div className="flex items-center gap-3 ml-4">
+        <div className="flex items-center gap-1.5 md:gap-3 flex-shrink-0">
           {/* Workspace */}
           <button
             id="workspace-switcher"
-            className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm text-[var(--scout-text-muted)] hover:text-[var(--scout-text-primary)] hover:bg-white/[0.04] transition-scout"
+            className="hidden lg:flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm text-[var(--scout-text-muted)] hover:text-[var(--scout-text-primary)] hover:bg-white/[0.04] transition-scout"
           >
             <span className="w-2 h-2 rounded-full bg-[var(--scout-accent-teal)]" />
             <span>Default Workspace</span>
@@ -109,7 +119,7 @@ export default function TopBar() {
           {/* User Avatar */}
           <button
             id="user-avatar"
-            className="flex items-center justify-center w-8 h-8 rounded-full bg-[var(--scout-accent-teal)]/15 text-[var(--scout-accent-teal)] hover:bg-[var(--scout-accent-teal)]/25 transition-scout"
+            className="hidden sm:flex items-center justify-center w-8 h-8 rounded-full bg-[var(--scout-accent-teal)]/15 text-[var(--scout-accent-teal)] hover:bg-[var(--scout-accent-teal)]/25 transition-scout"
             aria-label="User menu"
           >
             <User size={16} />

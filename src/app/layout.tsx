@@ -38,10 +38,10 @@ export default function RootLayout({
             <Sidebar />
 
             {/* Main Content */}
-            <div className="flex-1 ml-[240px] flex flex-col overflow-hidden transition-all duration-300">
+            <div className="flex-1 ml-0 md:ml-[240px] flex flex-col overflow-hidden transition-all duration-300">
               <TopBar />
               <main className="flex-1 overflow-y-auto">
-                <div className="max-w-[1280px] mx-auto px-6 py-6 md:px-8 md:py-8">
+                <div className="max-w-[1280px] mx-auto px-4 py-4 md:px-8 md:py-8">
                   {children}
                 </div>
               </main>

@@ -19,7 +19,6 @@ import {
 import { ScoutButton } from "@/components/ui/ScoutButton";
 import {
   ScoutCard,
-  ScoutCardHeader,
   ScoutCardTitle,
 } from "@/components/ui/ScoutCard";
 import { ScoutBadge, StageBadge } from "@/components/ui/ScoutBadge";
@@ -712,16 +711,16 @@ export default function ListsPage() {
   return (
     <div className="space-y-6 fade-in animate-fadeInUp">
       {/* Page Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div className="flex items-center gap-3">
-          <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-[var(--scout-accent-purple)]/10">
+          <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-[var(--scout-accent-purple)]/10 flex-shrink-0">
             <ListChecks
               size={20}
               className="text-[var(--scout-accent-purple)]"
             />
           </div>
           <div>
-            <h1 className="text-2xl font-semibold text-[var(--scout-text-heading)]">
+            <h1 className="text-xl sm:text-2xl font-semibold text-[var(--scout-text-heading)]">
               Lists
             </h1>
             <p className="text-sm text-[var(--scout-text-muted)]">

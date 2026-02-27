@@ -4,7 +4,6 @@ import React, { useMemo, useEffect } from "react";
 import {
   Building2,
   Search,
-  Filter,
   Bookmark,
   SlidersHorizontal,
 } from "lucide-react";
@@ -167,13 +166,13 @@ export default function CompaniesPage() {
   return (
     <div className="space-y-6 fade-in animate-fadeInUp">
       {/* Page Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div className="flex items-center gap-3">
-          <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-[var(--scout-accent-teal)]/10">
+          <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-[var(--scout-accent-teal)]/10 flex-shrink-0">
             <Building2 size={22} className="text-[var(--scout-accent-teal)]" />
           </div>
           <div>
-            <h1 className="text-2xl font-semibold text-[var(--scout-text-heading)]">
+            <h1 className="text-xl sm:text-2xl font-semibold text-[var(--scout-text-heading)]">
               Companies
             </h1>
             <p className="text-sm text-[var(--scout-text-muted)]">
@@ -212,7 +211,7 @@ export default function CompaniesPage() {
           type="text"
           value={filters.query || ""}
           onChange={(e) => setFilters({ query: e.target.value })}
-          placeholder="Search companies by name, sector, country, or tags..."
+          placeholder="Search companies..."
           className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-[var(--scout-border)] bg-[var(--scout-bg-card)] text-sm text-[var(--scout-text-primary)] placeholder:text-[var(--scout-text-muted)]/50 focus:outline-none focus:border-[var(--scout-accent-teal)]/30 focus:ring-1 focus:ring-[var(--scout-accent-teal)]/10 transition-all"
         />
       </div>

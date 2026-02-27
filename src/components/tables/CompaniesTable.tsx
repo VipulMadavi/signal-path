@@ -131,7 +131,7 @@ export default function CompaniesTable({
   return (
     <div className="rounded-xl border border-[rgba(255,255,255,0.05)] overflow-hidden">
       <div className="overflow-x-auto">
-        <table className="w-full">
+        <table className="w-full min-w-[640px]">
           <thead>
             <tr className="border-b border-[var(--scout-border)] bg-[var(--scout-bg-secondary)]">
               <th className="text-left py-3 px-4 text-meta font-medium">
@@ -143,7 +143,7 @@ export default function CompaniesTable({
               <th className="text-left py-3 px-4 text-meta font-medium">
                 Sector
               </th>
-              <th className="text-left py-3 px-4 text-meta font-medium">
+              <th className="text-left py-3 px-4 text-meta font-medium hidden md:table-cell">
                 Country
               </th>
               <th className="text-right py-3 px-4">
@@ -164,7 +164,7 @@ export default function CompaniesTable({
                   onSort={onSort}
                 />
               </th>
-              <th className="text-right py-3 px-4">
+              <th className="text-right py-3 px-4 hidden md:table-cell">
                 <SortHeader
                   label="Latest Signal"
                   field="latestSignal"
@@ -213,7 +213,7 @@ export default function CompaniesTable({
                     {company.sector}
                   </span>
                 </td>
-                <td className="py-3 px-4">
+                <td className="py-3 px-4 hidden md:table-cell">
                   <span className="text-sm text-[var(--scout-text-muted)]">
                     {company.country}
                   </span>
@@ -228,7 +228,7 @@ export default function CompaniesTable({
                     <ScoreBadge score={company.score} />
                   </div>
                 </td>
-                <td className="py-3 px-4 text-right">
+                <td className="py-3 px-4 text-right hidden md:table-cell">
                   <span className="text-sm text-[var(--scout-text-muted)]">
                     {formatDate(company.lastFundingDate)}
                   </span>
